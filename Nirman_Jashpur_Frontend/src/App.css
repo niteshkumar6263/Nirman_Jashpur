@@ -1,0 +1,164 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  font-family: sans-serif;
+}
+
+main {
+  flex: 1;
+  padding: 20px;
+  background-color: #f5f6fa;
+}
+
+
+.logged-in-main {
+  margin-left: 250px; 
+  padding: 20px;
+  background-color: #f5f6fa;
+}
+
+
+.header {
+  background-color: #1e293b; 
+  padding: 10px 20px;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.logo-cg {
+  font-size: 14px;
+  color: #38bdf8;
+}
+
+.logo-name {
+  font-size: 18px;
+}
+
+.jashpur-text {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.nav-desktop {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.nav-link.active {
+  background-color: #38bdf8;
+  color: black;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #1e293b;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0;
+}
+
+.sidebar-header {
+  text-align: center;
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 10px;
+}
+
+.dept-name {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.dept-sub {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.side-nav-link {
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  padding: 12px 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.side-nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.side-nav-link.active {
+  background-color: #38bdf8;
+  color: black;
+}
+
+.logout {
+  margin-top: auto;
+  background-color: rgba(220, 38, 38, 0.8);
+}
+
+.logout:hover {
+  background-color: rgba(220, 38, 38, 1);
+}
