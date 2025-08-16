@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -5,7 +7,6 @@ const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./utils/database');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
-require('dotenv').config();
 
 const app = express();
 
