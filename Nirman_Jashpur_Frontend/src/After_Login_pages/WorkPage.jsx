@@ -1,5 +1,4 @@
-// Full standalone Work Page replicating provided HTML exactly, converted to React.
-// Full standalone Work Page replicating provided HTML exactly, converted to React.
+
 import React, { useState, useEffect, useMemo } from 'react';
 import './WorkPage.css';
 
