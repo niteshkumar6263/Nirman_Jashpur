@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { body, validationResult, query } = require('express-validator');
-const AdministrativeApproval = require('../models/AdministrativeApproval');
+const administrativeApprovalController = require('../controllers/administrativeApprovalController');
 
 // Validation middleware
 const validateAdministrativeApproval = [
@@ -104,165 +104,17 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-// Helper function to build filter query
-const buildFilterQuery = (queryParams) => {
-  const filter = {};
-  
-  if (queryParams.area) {
-    filter.area = new RegExp(queryParams.area, 'i');
-  }
-  
-  if (queryParams.scheme) {
-    filter.scheme = new RegExp(queryParams.scheme, 'i');
-  }
-  
-  if (queryParams.status) {
-    filter.workProgressStage = queryParams.status;
-  }
-  
-  if (queryParams.approvalStatus) {
-    filter.approvalStatus = queryParams.approvalStatus;
-  }
-  
-  if (queryParams.workAgency) {
-    filter.workAgency = new RegExp(queryParams.workAgency, 'i');
-  }
-  
-  if (queryParams.approvalAuthority) {
-    filter.approvalAuthority = new RegExp(queryParams.approvalAuthority, 'i');
-  }
-  
-  return filter;
-};
-
-// GET /administrative-approvals - Get all administrative approvals
+// Routes
 router.get('/', [
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
   query('sortBy').optional().isIn(['entryDate', 'lastModified', 'workName', 'approvalDate']).withMessage('Invalid sort field'),
   query('sortOrder').optional().isIn(['asc', 'desc']).withMessage('Sort order must be asc or desc')
-], async (req, res) => {
-  try {
-    handleValidationErrors(req, res, () => {});
-    
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-    const sortBy = req.query.sortBy || 'entryDate';
-    const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
-    
-    const filter = buildFilterQuery(req.query);
-    
-    const [approvals, total] = await Promise.all([
-      AdministrativeApproval.find(filter)
-        .sort({ [sortBy]: sortOrder })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      AdministrativeApproval.countDocuments(filter)
-    ]);
-    
-    res.json({
-      data: approvals,
-      pagination: {
-        currentPage: page,
-        totalPages: Math.ceil(total / limit),
-        totalRecords: total,
-        hasNext: page < Math.ceil(total / limit),
-        hasPrev: page > 1
-      }
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
+], administrativeApprovalController.getAllApprovals);
 
-// GET /administrative-approvals/:id - Get single administrative approval
-router.get('/:id', async (req, res) => {
-  try {
-    const approval = await AdministrativeApproval.findById(req.params.id);
-    
-    if (!approval) {
-      return res.status(404).json({ message: 'Administrative approval not found' });
-    }
-    
-    res.json({ data: approval });
-  } catch (error) {
-    if (error.name === 'CastError') {
-      return res.status(400).json({ message: 'Invalid administrative approval ID' });
-    }
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
-
-// POST /administrative-approvals - Create new administrative approval
-router.post('/', validateAdministrativeApproval, handleValidationErrors, async (req, res) => {
-  try {
-    const approval = new AdministrativeApproval(req.body);
-    await approval.save();
-    
-    res.status(201).json({
-      message: 'Administrative approval created successfully',
-      data: approval
-    });
-  } catch (error) {
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({
-        message: 'Validation failed',
-        errors: Object.values(error.errors).map(err => ({ field: err.path, message: err.message }))
-      });
-    }
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
-
-// PUT /administrative-approvals/:id - Update administrative approval
-router.put('/:id', validateAdministrativeApproval, handleValidationErrors, async (req, res) => {
-  try {
-    const approval = await AdministrativeApproval.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-    
-    if (!approval) {
-      return res.status(404).json({ message: 'Administrative approval not found' });
-    }
-    
-    res.json({
-      message: 'Administrative approval updated successfully',
-      data: approval
-    });
-  } catch (error) {
-    if (error.name === 'CastError') {
-      return res.status(400).json({ message: 'Invalid administrative approval ID' });
-    }
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({
-        message: 'Validation failed',
-        errors: Object.values(error.errors).map(err => ({ field: err.path, message: err.message }))
-      });
-    }
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
-
-// DELETE /administrative-approvals/:id - Delete administrative approval
-router.delete('/:id', async (req, res) => {
-  try {
-    const approval = await AdministrativeApproval.findByIdAndDelete(req.params.id);
-    
-    if (!approval) {
-      return res.status(404).json({ message: 'Administrative approval not found' });
-    }
-    
-    res.json({ message: 'Administrative approval deleted successfully' });
-  } catch (error) {
-    if (error.name === 'CastError') {
-      return res.status(400).json({ message: 'Invalid administrative approval ID' });
-    }
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
+router.get('/:id', administrativeApprovalController.getApprovalById);
+router.post('/', validateAdministrativeApproval, handleValidationErrors, administrativeApprovalController.createApproval);
+router.put('/:id', validateAdministrativeApproval, handleValidationErrors, administrativeApprovalController.updateApproval);
+router.delete('/:id', administrativeApprovalController.deleteApproval);
 
 module.exports = router;
