@@ -17,6 +17,7 @@ import ReportsPage from './After_Login_pages/ReportsPage.jsx';
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Removed standalone early return; WorkPage will be embedded so navigation remains functional.
   const renderPageContent = () => {
     if (!isLoggedIn) {
       switch (currentPage) {
@@ -33,12 +34,10 @@ const App = () => {
       switch (currentPage) {
         case 'dashboard':
           return <DashboardPage />;
-        case 'gis':
+  case 'gis':
           return <GISPage />;
         case 'work':
-          return <WorkPage />;
-        case 'technical':
-          return <TechnicalApprovalPage />;
+          return <WorkPage standalone={false} />;
         case 'admin':
           return <AdministrativeApprovalPage />;
         case 'tender':
@@ -57,12 +56,12 @@ const App = () => {
 
   return (
     <div className="app-container">
-      {!isLoggedIn ? (
-        <TopNavbar
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-        />
-      ) : (
+      {/* Public top navbar when not logged in */}
+      {!isLoggedIn && (
+        <TopNavbar currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      )}
+      {/* Sidebar for logged in pages except Technical (it has own full layout) */}
+      {isLoggedIn && (
         <SideNavbar
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
@@ -73,7 +72,7 @@ const App = () => {
         />
       )}
       <main className={isLoggedIn ? 'logged-in-main' : ''}>
-        {renderPageContent()}
+        {currentPage === 'technical' ? <TechnicalApprovalPage /> : renderPageContent()}
       </main>
     </div>
   );
@@ -112,38 +111,35 @@ const TopNavbar = ({ currentPage, setCurrentPage }) => {
 };
 
 const SideNavbar = ({ currentPage, setCurrentPage, onLogout }) => {
-  const NavItem = ({ page, label, icon }) => (
-    <button
-      onClick={() => setCurrentPage(page)}
-      className={`side-nav-link ${currentPage === page ? 'active' : ''}`}
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
-  );
-
+  const items = [
+    { k:'dashboard', label:'डैशबोर्ड', icon:<Home /> },
+    { k:'work', label:'कार्य', icon:<ClipboardList /> },
+    { k:'gis', label:'GIS Fencing (Map)', icon:<Map /> },
+    { k:'technical', label:'तकनीकी स्वीकृति', icon:<FileText /> },
+    { k:'admin', label:'प्रशासकीय स्वीकृति', icon:<FileText /> },
+    { k:'tender', label:'निविदा', icon:<FileText /> },
+    { k:'order', label:'कार्य आदेश', icon:<ClipboardList /> },
+    { k:'progress', label:'कार्य प्रगति', icon:<BarChart /> },
+    { k:'report', label:'रिपोर्ट', icon:<FileText /> }
+  ];
   return (
     <aside className="sidebar">
-      <div className="sidebar-header">
-        <img src="/logo.png" alt="Logo" className="sidebar-logo" />
-        <p className="dept-name">Tribal Department</p>
-        <p className="dept-sub">आदिवासी विकास विभाग, जशपुर</p>
+      <div className="s-logo">
+        <div className="badge"><i className="fa-solid fa-certificate" style={{ color:'#fff' }}></i></div>
+        <div className="hide-sm">
+          <div className="s-name">Jashpur — निर्माण</div>
+          <div className="s-sub">आदिवासी विकास विभाग</div>
+        </div>
       </div>
-      <nav className="side-nav">
-        <NavItem page="dashboard" label="डैशबोर्ड" icon={<Home />} />
-        <NavItem page="gis" label="GIS Fencing (Map)" icon={<Map />} />
-        <NavItem page="work" label="कार्य" icon={<ClipboardList />} />
-        <NavItem page="technical" label="तकनीकी स्वीकृति" icon={<FileText />} />
-        <NavItem page="admin" label="प्रशासकीय स्वीकृति" icon={<FileText />} />
-        <NavItem page="tender" label="निविदा" icon={<FileText />} />
-        <NavItem page="order" label="कार्य आदेश" icon={<ClipboardList />} />
-        <NavItem page="progress" label="कार्य प्रगति" icon={<BarChart />} />
-        <NavItem page="report" label="रिपोर्ट" icon={<FileText />} />
-        <button onClick={onLogout} className="side-nav-link logout">
-          <LogOut />
-          <span>लॉगआउट</span>
-        </button>
+      <nav className="menu" aria-label="मुख्य नेविगेशन">
+        {items.map(it => (
+          <button key={it.k} className={currentPage===it.k? 'active': ''} onClick={()=>setCurrentPage(it.k)}>
+            <i className="fa-solid fa-circle" style={{fontSize:6, display:'none'}}></i>{it.icon}<span>{it.label}</span>
+          </button>
+        ))}
+        <button className="logout-btn" onClick={onLogout}><i className="fa-solid fa-power-off" style={{width:26,textAlign:'center'}}></i><span>लॉगआउट</span></button>
       </nav>
+      <div className="tribal"><div className="art" /></div>
     </aside>
   );
 };
