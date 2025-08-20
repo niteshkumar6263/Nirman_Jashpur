@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useMemo } from 'react';
 import './WorkPage.css';
 
@@ -20,8 +19,8 @@ function loadData() {
 function saveData(rows) { localStorage.setItem(STORAGE_KEY, JSON.stringify(rows)); }
 
 
-const WorkPage = ({ standalone = true }) => {
-  // Data state
+const WorkPage = ({ standalone = true, onAddNewWork, onLogout, onViewDetails }) => {
+  
   const [data, setData] = useState(loadData());
   const [filters, setFilters] = useState({ type: '', plan: '', q: '' });
   const [page, setPage] = useState(1);
@@ -30,13 +29,11 @@ const WorkPage = ({ standalone = true }) => {
   const [sortDir, setSortDir] = useState('asc');
   const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState('');
-  // Local sidebar active key (no routing used now)
+  
   const [active, setActive] = useState('work');
 
   useEffect(() => { saveData(data); }, [data]);
-  // No external routing; keep active state internal
-
-  // Filter + sort
+  
   const filtered = useMemo(() => {
     return data.filter(d => {
       if (filters.type && d.type.indexOf(filters.type) === -1) return false;
@@ -92,12 +89,12 @@ const WorkPage = ({ standalone = true }) => {
   const keyMap = ['id', null, 'type', 'year', 'vname', 'name', 'agency', 'plan', 'amount', 'status', 'modified', null];
   function toggleSort(idx) { const k = keyMap[idx]; if (!k) return; if (sortKey === k) setSortDir(d => d === 'asc' ? 'desc' : 'asc'); else { setSortKey(k); setSortDir('asc'); } }
 
-  // For exact replication of provided screenshot: breadcrumbs fixed, title fixed to 'निर्माण'
+  
   const meta = { crumbs: 'Dashboard / Work / Work-List', title: 'निर्माण' };
 
-  // Load Font Awesome once
+  
   useEffect(() => {
-    // Fonts & icons now globally loaded in index.html; keep fallback only.
+    
     if (!document.querySelector('link[href*="font-awesome"], link[data-fa]')) {
       const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css'; l.setAttribute('data-fa', '1'); document.head.appendChild(l);
     }
@@ -116,7 +113,11 @@ const WorkPage = ({ standalone = true }) => {
           </div>
           <div className="user">
             <div className="ic" tabIndex={0} aria-label="User profile"><i className="fa-solid fa-user" /></div>
-            <button className="logout" aria-label="Logout" type="button" onClick={() => alert('Logout clicked')}><i className="fa-solid fa-power-off" /></button>
+            <button className="logout" aria-label="Logout" type="button" onClick={onLogout || (() => {
+              if (window.confirm('क्या आप लॉगआउट करना चाहते हैं?')) {
+                window.location.href = '/';
+              }
+            })}><i className="fa-solid fa-power-off" /></button>
           </div>
         </div>
         <div className="subbar"><span className="dot" /><h2>कार्य की सूची</h2></div>
@@ -140,7 +141,7 @@ const WorkPage = ({ standalone = true }) => {
               <button className="btn dark" type="button" title="रीसेट" onClick={resetFilters}><i className="fa-solid fa-rotate" /></button>
               <button className="btn dark" type="button" title="प्रिंट" onClick={()=>window.print()}><i className="fa-solid fa-print" /></button>
               <button className="btn dark" type="button" title="एक्सपोर्ट" onClick={exportCSV}><i className="fa-solid fa-file-export" /></button>
-              <button className="btn green" type="button" onClick={()=>setShowModal(true)}><i className="fa-solid fa-plus" /> Add New Work</button>
+              <button className="btn green" type="button" onClick={()=> onAddNewWork ? onAddNewWork() : setShowModal(true)}><i className="fa-solid fa-plus" /> Add New Work</button>
             </div>
           </div>
         </section>
@@ -176,7 +177,7 @@ const WorkPage = ({ standalone = true }) => {
                       <td>{r.modified}</td>
                       <td>
                         <div className="row-actions">
-                          <button className="icon-btn view" type="button" title="देखें" aria-label="देखें"><i className="fa-solid fa-eye" /></button>
+                          <button className="icon-btn view" type="button" title="देखें" aria-label="देखें" onClick={() => onViewDetails ? onViewDetails(r.id) : null}><i className="fa-solid fa-eye" /></button>
                           <button className="icon-btn del" type="button" title="हटाएँ" aria-label="हटाएँ" onClick={()=>deleteRow(r.id)}><i className="fa-solid fa-trash" /></button>
                         </div>
                       </td>

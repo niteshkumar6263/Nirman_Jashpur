@@ -7,16 +7,20 @@ import DownloadPage from './Before_Login_pages/DownloadPage.jsx';
 import DashboardPage from './After_Login_pages/DashboardPage.jsx';
 import GISPage from './After_Login_pages/GISPage.jsx';
 import WorkPage from './After_Login_pages/WorkPage.jsx';
+import AddToWork from './After_Login_pages/AddToWork.jsx';
 import TechnicalApprovalPage from './After_Login_pages/TechnicalApprovalPage.jsx';
 import AdministrativeApprovalPage from './After_Login_pages/AdministrativeApprovalPage.jsx';
 import TenderPage from './After_Login_pages/TenderPage.jsx';
 import WorkOrderPage from './After_Login_pages/WorkOrderPage.jsx';
 import WorkProgressPage from './After_Login_pages/WorkProgressPage.jsx';
 import ReportsPage from './After_Login_pages/ReportsPage.jsx';
+import WorkDetails from './After_Login_pages/WorkDetails.jsx';
 
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [selectedWorkId, setSelectedWorkId] = useState(null);
+  const [prefilledWorkData, setPrefilledWorkData] = useState(null);
   // Removed standalone early return; WorkPage will be embedded so navigation remains functional.
   const renderPageContent = () => {
     if (!isLoggedIn) {
@@ -37,7 +41,33 @@ const App = () => {
   case 'gis':
           return <GISPage />;
         case 'work':
-          return <WorkPage standalone={false} />;
+          return <WorkPage standalone={false} onAddNewWork={()=>setCurrentPage('workAdd')} onViewDetails={(id) => {
+            setSelectedWorkId(id);
+            setCurrentPage('workDetails');
+          }} onLogout={() => {
+            setIsLoggedIn(false);
+            setCurrentPage('home');
+          }} />;
+        case 'workAdd':
+          return <AddToWork 
+            prefilledData={prefilledWorkData}
+            onWorkAdded={() => {
+              setPrefilledWorkData(null);
+              setCurrentPage('work');
+            }} 
+          />;
+        case 'workDetails':
+          return <WorkDetails 
+            workId={selectedWorkId}
+            onBack={() => setCurrentPage('work')}
+            onAcceptWork={(workData) => {
+              setPrefilledWorkData(workData);
+              setCurrentPage('workAdd');
+            }}
+            onLogout={() => {
+            setIsLoggedIn(false);
+            setCurrentPage('home');
+          }} />;
         case 'admin':
           return <AdministrativeApprovalPage />;
         case 'tender':
@@ -71,8 +101,11 @@ const App = () => {
           }}
         />
       )}
-      <main className={isLoggedIn ? 'logged-in-main' : ''}>
-        {currentPage === 'technical' ? <TechnicalApprovalPage /> : renderPageContent()}
+  <main className={isLoggedIn ? 'logged-in-main' : ''}>
+        {currentPage === 'technical' ? <TechnicalApprovalPage onLogout={() => {
+          setIsLoggedIn(false);
+          setCurrentPage('home');
+        }} /> : renderPageContent()}
       </main>
     </div>
   );

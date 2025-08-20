@@ -1,6 +1,5 @@
-/* Reference-aligned WorkPage styles (scoped) */
 .work-ref { font-family:'Noto Sans Devanagari', system-ui, Segoe UI, Arial, sans-serif; }
-.header { position:sticky; top:0; z-index:10; background:linear-gradient(90deg,var(--deep-blue),var(--deep-blue-2)); color:#fff; }
+.header { position:sticky; top:0; z-index:10; background:linear-gradient(90deg,var(--deep-blue),var(--deep-blue-2)); color:#fff; border-radius: 16px 16px 16px 16px; overflow: hidden; }
 .top { display:flex; justify-content:space-between; align-items:center; padding:12px 18px; }
 .crumbs { font-size:12px; opacity:.9; }
 .title h1 { margin:0; font-size:20px; }
@@ -64,7 +63,7 @@ tbody tr:hover { background:#eaf5ff; }
 .modal .grid .full { grid-column:1/-1; }
 .toast { position:fixed; right:14px; bottom:14px; background:#0f8a63; color:#fff; padding:10px 12px; border-radius:8px; display:none; }
 .toast.show { display:block; }
-/* Ensure native select option text is visible (was inheriting white) */
+
 .select { color:#1a1f29; }
 .select option { color:#1a1f29; background:#fff; }
 @media (max-width: 640px) {
