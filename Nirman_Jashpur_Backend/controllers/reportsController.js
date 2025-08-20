@@ -1,9 +1,247 @@
-const WorkProgress = require('../models/WorkProgress');
-const WorkOrder = require('../models/WorkOrder');
-const Tender = require('../models/Tender');
-const AdministrativeApproval = require('../models/AdministrativeApproval');
-const WorkType = require('../models/WorkType');
+
+const WorkProposal = require('../models/WorkProposal');
+const User = require('../models/User');
 const { validationResult } = require('express-validator');
+
+// @desc    Get dashboard statistics
+// @route   GET /api/reports/dashboard
+// @access  Private
+const getDashboardStats = async (req, res) => {
+  try {
+    const totalProposals = await WorkProposal.countDocuments();
+    const pendingTechnical = await WorkProposal.countDocuments({ currentStatus: 'Pending Technical Approval' });
+    const pendingAdministrative = await WorkProposal.countDocuments({ currentStatus: 'Pending Administrative Approval' });
+    const inProgress = await WorkProposal.countDocuments({ currentStatus: 'Work In Progress' });
+    const completed = await WorkProposal.countDocuments({ currentStatus: 'Work Completed' });
+    
+    // Financial statistics
+    const financialStats = await WorkProposal.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalSanctionAmount: { $sum: '$sanctionAmount' },
+          totalApprovedAmount: { $sum: '$administrativeApproval.approvedAmount' },
+          totalReleasedAmount: { $sum: '$workProgress.totalAmountReleasedSoFar' }
+        }
+      }
+    ]);
+
+    const stats = {
+      proposals: {
+        total: totalProposals,
+        pendingTechnical,
+        pendingAdministrative,
+        inProgress,
+        completed
+      },
+      financial: financialStats[0] || {
+        totalSanctionAmount: 0,
+        totalApprovedAmount: 0,
+        totalReleasedAmount: 0
+      }
+    };
+
+    res.json({
+      success: true,
+      data: stats
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching dashboard statistics',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get department-wise report
+// @route   GET /api/reports/department-wise
+// @access  Private
+const getDepartmentWiseReport = async (req, res) => {
+  try {
+    const { year, department } = req.query;
+    
+    let matchStage = {};
+    
+    if (year) {
+      matchStage.financialYear = year;
+    }
+    
+    if (department) {
+      matchStage.workDepartment = new RegExp(department, 'i');
+    }
+
+    const report = await WorkProposal.aggregate([
+      { $match: matchStage },
+      {
+        $group: {
+          _id: '$workDepartment',
+          totalProposals: { $sum: 1 },
+          totalSanctionAmount: { $sum: '$sanctionAmount' },
+          completed: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Work Completed'] }, 1, 0] }
+          },
+          inProgress: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Work In Progress'] }, 1, 0] }
+          },
+          pending: {
+            $sum: { 
+              $cond: [
+                { 
+                  $in: ['$currentStatus', ['Pending Technical Approval', 'Pending Administrative Approval']] 
+                }, 
+                1, 
+                0
+              ] 
+            }
+          }
+        }
+      },
+      { $sort: { totalSanctionAmount: -1 } }
+    ]);
+
+    res.json({
+      success: true,
+      data: report
+    });
+  } catch (error) {
+    console.error('Error fetching department report:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching department-wise report',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get status-wise report
+// @route   GET /api/reports/status-wise
+// @access  Private
+const getStatusWiseReport = async (req, res) => {
+  try {
+    const { year, financialYear } = req.query;
+    
+    let matchStage = {};
+    
+    if (financialYear) {
+      matchStage.financialYear = financialYear;
+    }
+
+    const report = await WorkProposal.aggregate([
+      { $match: matchStage },
+      {
+        $group: {
+          _id: '$currentStatus',
+          count: { $sum: 1 },
+          totalAmount: { $sum: '$sanctionAmount' }
+        }
+      },
+      { $sort: { count: -1 } }
+    ]);
+
+    res.json({
+      success: true,
+      data: report
+    });
+  } catch (error) {
+    console.error('Error fetching status report:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching status-wise report',
+      error: error.message
+    });
+  }
+};
+
+// @desc    Get financial report
+// @route   GET /api/reports/financial
+// @access  Private
+const getFinancialReport = async (req, res) => {
+  try {
+    const { financialYear, department } = req.query;
+    
+    let matchStage = {};
+    
+    if (financialYear) {
+      matchStage.financialYear = financialYear;
+    }
+    
+    if (department) {
+      matchStage.workDepartment = new RegExp(department, 'i');
+    }
+
+    const report = await WorkProposal.aggregate([
+      { $match: matchStage },
+      {
+        $group: {
+          _id: '$financialYear',
+          totalProposals: { $sum: 1 },
+          totalSanctionAmount: { $sum: '$sanctionAmount' },
+          totalApprovedAmount: { $sum: '$administrativeApproval.approvedAmount' },
+          totalReleasedAmount: { $sum: '$workProgress.totalAmountReleasedSoFar' },
+          completedWorks: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Work Completed'] }, 1, 0] }
+          }
+        }
+      }
+    ]);
+    res.json({
+      success: true,
+      data: report
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// @desc    Get progress report
+// @route   GET /api/reports/progress
+// @access  Private
+const getProgressReport = async (req, res) => {
+  try {
+    const { status, department } = req.query;
+    
+    let matchStage = {
+      currentStatus: { $in: ['Work Order Created', 'Work In Progress', 'Work Completed'] }
+    };
+    
+    if (status) {
+      matchStage.currentStatus = status;
+    }
+    
+    if (department) {
+      matchStage.workDepartment = new RegExp(department, 'i');
+    }
+
+    const report = await WorkProposal.find(matchStage)
+      .populate('submittedBy', 'fullName department')
+      .populate('workProgress.lastUpdatedBy', 'fullName')
+      .select('serialNumber nameOfWork workDepartment currentStatus workProgress workOrder.dateOfWorkOrder completionDate')
+      .sort({ 'workProgress.updatedAt': -1 });
+
+    res.json({
+      success: true,
+      data: report
+    });
+  } catch (error) {
+    console.error('Error fetching progress report:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching progress report',
+      error: error.message
+    });
+  }
+};
+
+
+// ...existing code...
+
+// ...existing code...
+
+
+// ...existing code...
+
 
 // Helper function to get year filter
 const getYearFilter = (year) => {
@@ -468,3 +706,10 @@ exports.getPhotoMissingReport = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+// Export the const functions
+exports.getDashboardStats = getDashboardStats;
+exports.getDepartmentWiseReport = getDepartmentWiseReport;
+exports.getStatusWiseReport = getStatusWiseReport;
+exports.getFinancialReport = getFinancialReport;
+exports.getProgressReport = getProgressReport;

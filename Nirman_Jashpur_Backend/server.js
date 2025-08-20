@@ -33,12 +33,15 @@ app.use(express.json({ limit: process.env.MAX_FILE_SIZE || '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api/v1/work-progress', require('./routes/workProgress'));
-app.use('/api/v1/work-orders', require('./routes/workOrders'));
-app.use('/api/v1/tenders', require('./routes/tenders'));
-app.use('/api/v1/administrative-approvals', require('./routes/administrativeApprovals'));
-app.use('/api/v1/work-types', require('./routes/workTypes'));
-app.use('/api/v1/reports', require('./routes/reports'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/work-proposals', require('./routes/workProposals'));
+app.use('/api/work-proposals', require('./routes/tenders')); // Tender routes for work proposals
+app.use('/api/work-proposals', require('./routes/workOrders')); // Work order routes for work proposals
+app.use('/api/work-proposals', require('./routes/workProgress')); // Progress routes for work proposals
+app.use('/api/tenders', require('./routes/tenders')); // General tender routes
+app.use('/api/work-orders', require('./routes/workOrders')); // General work order routes
+app.use('/api/work-progress', require('./routes/workProgress')); // General progress routes
+app.use('/api/reports', require('./routes/reports'));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

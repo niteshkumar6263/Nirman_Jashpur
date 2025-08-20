@@ -1,93 +1,55 @@
 const express = require('express');
 const router = express.Router();
-const { body, validationResult, query } = require('express-validator');
-const workProgressController = require('../controllers/workProgressController');
+const { body } = require('express-validator');
+const { auth } = require('../middleware/auth');
+const {
+  updateWorkProgress,
+  addInstallment,
+  completeWork,
+  getProgressHistory,
+  getAllWorkProgress
+} = require('../controllers/workProgressController');
 
 // Validation middleware
-const validateWorkProgress = [
-  body('workName')
-    .trim()
-    .notEmpty()
-    .withMessage('Work name is required')
-    .isLength({ max: 500 })
-    .withMessage('Work name cannot exceed 500 characters'),
-  
-  body('area')
-    .trim()
-    .notEmpty()
-    .withMessage('Area is required')
-    .isLength({ max: 100 })
-    .withMessage('Area cannot exceed 100 characters'),
-  
-  body('workAgency')
-    .trim()
-    .notEmpty()
-    .withMessage('Work agency is required')
-    .isLength({ max: 200 })
-    .withMessage('Work agency cannot exceed 200 characters'),
-  
-  body('scheme')
-    .trim()
-    .notEmpty()
-    .withMessage('Scheme is required')
-    .isLength({ max: 200 })
-    .withMessage('Scheme cannot exceed 200 characters'),
-  
-  body('technicalApproval')
-    .trim()
-    .notEmpty()
-    .withMessage('Technical approval is required')
-    .isLength({ max: 100 })
-    .withMessage('Technical approval cannot exceed 100 characters'),
-  
-  body('administrativeApproval')
-    .trim()
-    .notEmpty()
-    .withMessage('Administrative approval is required')
-    .isLength({ max: 100 })
-    .withMessage('Administrative approval cannot exceed 100 characters'),
-  
-  body('workProgressStage')
-    .optional()
-    .isIn(['Pending', 'In Progress', 'Completed'])
-    .withMessage('Work progress stage must be Pending, In Progress, or Completed'),
-  
-  body('workDetails')
-    .optional()
-    .trim()
-    .isLength({ max: 1000 })
-    .withMessage('Work details cannot exceed 1000 characters'),
-  
-  body('tenderApproval')
-    .optional()
-    .trim()
-    .isLength({ max: 100 })
-    .withMessage('Tender approval cannot exceed 100 characters')
+const updateProgressValidation = [
+  body('progressPercentage').isFloat({ min: 0, max: 100 }).withMessage('Progress percentage must be between 0 and 100'),
+  body('expenditureAmount').optional().isNumeric().withMessage('Expenditure amount must be a number'),
+  body('installmentAmount').optional().isNumeric().withMessage('Installment amount must be a number'),
+  body('installmentDate').optional().isISO8601().withMessage('Valid installment date is required')
 ];
 
-// Helper function to handle validation errors
-const handleValidationErrors = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      message: 'Validation failed',
-      errors: errors.array()
-    });
-  }
-  next();
-};
+const addInstallmentValidation = [
+  body('amount').isNumeric().withMessage('Amount is required and must be a number'),
+  body('date').isISO8601().withMessage('Valid date is required')
+];
 
-// Routes
-router.get('/', [
-  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
-  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  query('sortBy').optional().isIn(['entryDate', 'lastModified', 'workName']).withMessage('Invalid sort field'),
-  query('sortOrder').optional().isIn(['asc', 'desc']).withMessage('Sort order must be asc or desc')
-], workProgressController.getAllWorkProgress);
+const completeWorkValidation = [
+  body('finalExpenditureAmount').optional().isNumeric().withMessage('Final expenditure amount must be a number')
+];
 
-router.get('/:id', workProgressController.getWorkProgressById);
-router.post('/', validateWorkProgress, handleValidationErrors, workProgressController.createWorkProgress);
-router.put('/:id', validateWorkProgress, handleValidationErrors, workProgressController.updateWorkProgress);
-router.delete('/:id', workProgressController.deleteWorkProgress);
+// @route   POST /api/work-proposals/:id/progress
+// @desc    Update work progress
+// @access  Private (Progress Monitor)
+router.post('/:id/progress', auth, updateProgressValidation, updateWorkProgress);
+
+// @route   POST /api/work-proposals/:id/progress/installment
+// @desc    Add installment payment
+// @access  Private (Progress Monitor, Admin)
+router.post('/:id/progress/installment', auth, addInstallmentValidation, addInstallment);
+
+// @route   POST /api/work-proposals/:id/progress/complete
+// @desc    Complete work
+// @access  Private (Progress Monitor, Admin)
+router.post('/:id/progress/complete', auth, completeWorkValidation, completeWork);
+
+// @route   GET /api/work-proposals/:id/progress/history
+// @desc    Get work progress history
+// @access  Private
+router.get('/:id/progress/history', auth, getProgressHistory);
+
+// @route   GET /api/work-progress
+// @desc    Get all work progress (dashboard view)
+// @access  Private
+router.get('/', auth, getAllWorkProgress);
 
 module.exports = router;
