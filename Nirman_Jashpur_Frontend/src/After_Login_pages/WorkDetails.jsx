@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './WorkDetails.css';
-
+import { useParams } from "react-router-dom";
 // Shared work data utilities
 const STORAGE_KEY = 'tribal_work_data_v1';
 const defaultRows = [
@@ -18,7 +18,8 @@ function loadWorkData() {
   } catch { return [...defaultRows]; }
 }
 
-const WorkDetails = ({ workId, onLogout, onBack, onAcceptWork }) => {
+const WorkDetails = ({ onLogout, onBack, onAcceptWork }) => {
+  const { workId } = useParams();
   const [workData, setWorkData] = useState(null);
   const [allWorks, setAllWorks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
