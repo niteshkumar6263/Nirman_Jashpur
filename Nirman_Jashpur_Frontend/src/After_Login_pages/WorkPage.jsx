@@ -30,13 +30,10 @@ const WorkPage = ({ standalone = true }) => {
   const [sortDir, setSortDir] = useState('asc');
   const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState('');
-  // Local sidebar active key (no routing used now)
   const [active, setActive] = useState('work');
 
   useEffect(() => { saveData(data); }, [data]);
-  // No external routing; keep active state internal
-
-  // Filter + sort
+  
   const filtered = useMemo(() => {
     return data.filter(d => {
       if (filters.type && d.type.indexOf(filters.type) === -1) return false;
