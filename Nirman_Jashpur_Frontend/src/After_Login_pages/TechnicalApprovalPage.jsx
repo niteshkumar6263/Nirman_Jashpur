@@ -54,7 +54,7 @@ function generateData(){
 	}));
 }
 
-export default function TechnicalApproval(){
+export default function TechnicalApproval({ onLogout }){
 	// Data + state
 	const [rows,setRows]=useState(()=>generateData());
 	const [query,setQuery]=useState('');
@@ -63,7 +63,7 @@ export default function TechnicalApproval(){
 	const [page,setPage]=useState(1);
 	const [sort,setSort]=useState({col:null,dir:1});
 
-		// Dialog refs
+		
 		const viewDialogRef=useRef(null);
 		const addDialogRef=useRef(null);
 		const deleteDialogRef=useRef(null);
@@ -72,14 +72,14 @@ export default function TechnicalApproval(){
 	const [viewRow,setViewRow]=useState(null);
 	const [deleteTarget,setDeleteTarget]=useState(null);
 
-	/* Filter */
+
 	const filtered = useMemo(()=>{
 		if(!debouncedQuery.trim()) return rows;
 		const q=debouncedQuery.toLowerCase();
 		return rows.filter(r => Object.values(r).some(v => String(v).toLowerCase().includes(q)));
 	},[rows,debouncedQuery]);
 
-	/* Sort */
+
 	const sorted = useMemo(()=>{
 		if(!sort.col) return filtered;
 		const copy=[...filtered];
@@ -91,7 +91,7 @@ export default function TechnicalApproval(){
 		return copy;
 	},[filtered,sort]);
 
-	/* Pagination */
+	
 	const paged = useMemo(()=>{
 		const start=(page-1)*entries;
 		return sorted.slice(start,start+entries);
@@ -107,7 +107,7 @@ export default function TechnicalApproval(){
 	const startIdx= total ? (page-1)*entries+1 : 0;
 	const endIdx = Math.min(page*entries, total);
 
-	/* Sort handler */
+	
 	const toggleSort = (col)=>{
 		if(col===sort.col){
 			setSort(s=>({col, dir: s.dir*-1}));
@@ -116,11 +116,28 @@ export default function TechnicalApproval(){
 		}
 	};
 
-	/* Actions */
+	
 	const openView = (sr)=>{
 		const r=rows.find(r=>r.sr===sr);
 		setViewRow(r||null);
 		viewDialogRef.current?.showModal();
+	};
+
+
+	const getFieldLabel = (key) => {
+		const labels = {
+			sr: 'क्रमांक',
+			name: 'कार्य का नाम',
+			area: 'क्षेत्र',
+			agency: 'कार्य एजेन्सी',
+			yojna: 'योजना',
+			tech: 'तकनीकी स्वीकृति',
+			admin: 'प्रशासकीय स्वीकृति',
+			tender: 'निविदा स्वीकृति',
+			stage: 'कार्य प्रगति चरण',
+			desc: 'कार्य विवरण'
+		};
+		return labels[key] || key;
 	};
 
 	const confirmDelete = (sr)=>{
@@ -204,8 +221,29 @@ export default function TechnicalApproval(){
 		return (
 			<div className="tech-wrapper" role="region" aria-label="Technical approval section">
 				<div className="tech-page-title-band">
-					<span className="tech-page-title" role="heading" aria-level="1">तकनीकी स्वीकृति</span>
-					<small className="muted" style={{marginLeft:'8px'}}>Dashboard / Sanction / Technical-Sanction</small>
+					<div>
+						<span className="tech-page-title" role="heading" aria-level="1">तकनीकी स्वीकृति</span>
+						<small className="muted" style={{marginLeft:'8px'}}>Dashboard / Sanction / Technical-Sanction</small>
+					</div>
+					{onLogout && (
+						<div className="tech-user-controls">
+							<div className="tech-user-icon" tabIndex={0} aria-label="User profile">
+								<i className="fa-solid fa-user"></i>
+							</div>
+							<button 
+								className="tech-logout-btn" 
+								aria-label="Logout" 
+								type="button" 
+								onClick={onLogout || (() => {
+									if (window.confirm('क्या आप लॉगआउट करना चाहते हैं?')) {
+										window.location.href = '/';
+									}
+								})}
+							>
+								<i className="fa-solid fa-power-off"></i>
+							</button>
+						</div>
+					)}
 				</div>
 				<section className="tech-card" aria-label="Technical Sanction Table">
 					<div className="card-header">
@@ -348,23 +386,23 @@ export default function TechnicalApproval(){
 			{/* View Dialog */}
 			<dialog id="viewDialog" ref={viewDialogRef}>
 				<form method="dialog">
-					<h3 style={{marginTop:0}}>कार्य विवरण</h3>
-					<div style={{maxWidth:480,fontSize:'.95rem',lineHeight:1.4}}>
+					<h3>कार्य विवरण</h3>
+					<div className="dialog-content">
 						{viewRow && (
-							<table style={{width:'100%',borderCollapse:'collapse'}}>
+							<table className="dialog-table">
 								<tbody>
 									{Object.entries(viewRow).map(([k,v])=>(
 										<tr key={k}>
-											<th style={{textAlign:'left',padding:'4px 6px',background:'#f1f5f9',width:'40%'}}>{k}</th>
-											<td style={{padding:'4px 6px',borderLeft:'1px solid #e2e8f0'}}>{v||''}</td>
+											<th>{getFieldLabel(k)}</th>
+											<td>{v||'—'}</td>
 										</tr>
 									))}
 								</tbody>
 							</table>
 						)}
 					</div>
-					<div style={{marginTop:18,display:'flex',gap:8,justifyContent:'flex-end'}}>
-						<button className="btn icon" value="close" onClick={()=>viewDialogRef.current?.close()}>Close</button>
+					<div className="dialog-actions">
+						<button className="btn" type="button" onClick={()=>viewDialogRef.current?.close()}>Close</button>
 					</div>
 				</form>
 			</dialog>
