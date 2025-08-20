@@ -29,9 +29,8 @@ const WorkPage = ({ standalone = true, onAddNewWork, onLogout, onViewDetails }) 
   const [sortDir, setSortDir] = useState('asc');
   const [showModal, setShowModal] = useState(false);
   const [toast, setToast] = useState('');
-  
   const [active, setActive] = useState('work');
-
+  
   useEffect(() => { saveData(data); }, [data]);
   
   const filtered = useMemo(() => {
