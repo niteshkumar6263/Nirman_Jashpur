@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const workTypeSchema = new mongoose.Schema({
   workType: { 
     type: String, 
