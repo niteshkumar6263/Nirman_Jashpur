@@ -27,7 +27,17 @@ import WorkOrderPage from './After_Login_pages/WorkOrderPage.jsx';
 import WorkProgressPage from './After_Login_pages/WorkProgressPage.jsx';
 import ReportsPage from './After_Login_pages/ReportsPage.jsx';
 import WorkDetailsPage from './After_Login_pages/WorkDetails.jsx';
-
+import Heading from './componentsfront/heading.jsx';
+import About from './componentsfront/about.jsx';
+import Display from './componentsfront/info.jsx';
+import Details from './componentsfront/details.jsx';
+import Footer from './componentsfront/footer.jsx';
+import './index.css';
+import './css/about.css';
+import './css/heading.css';
+import './css/details.css';
+import './css/info.css';
+import './css/footer.css';
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -98,23 +108,30 @@ const TopNavbar = ({ setIsLoggedIn }) => {
   );
 
   return (
-    <header className="header">
-      <div className="container">
-        <div className="logo-group">
-          <div className="logo-text">
-            <span className="logo-cg">CG</span>
-            <span className="logo-name">निर्माण जशपुर</span>
-          </div>
-          <span className="jashpur-text">Jashpur</span>
-        </div>
+    // <header className="header">
+    //   <div className="container">
+    //     <div className="logo-group">
+    //       <div className="logo-text">
+    //         <span className="logo-cg">CG</span>
+    //         <span className="logo-name">निर्माण जशपुर</span>
+    //       </div>
+    //       <span className="jashpur-text">Jashpur</span>
+    //     </div>
 
-        <nav className="nav-desktop">
-          <NavLink to="/" label="मुखपृष्ठ" icon={<Home />} />
-          <NavLink to="/login" label="विभागीय लॉगिन" icon={<LogIn />} />
-          <NavLink to="/download" label="ऐप डाउनलोड करे" icon={<Download />} />
-        </nav>
-      </div>
-    </header>
+    //     <nav className="nav-desktop">
+    //       <NavLink to="/" label="मुखपृष्ठ" icon={<Home />} />
+    //       <NavLink to="/login" label="विभागीय लॉगिन" icon={<LogIn />} />
+    //       <NavLink to="/download" label="ऐप डाउनलोड करे" icon={<Download />} />
+    //     </nav>
+    //   </div>
+    // </header>
+    <div className='container'>
+      <Heading/>
+      <About/>
+      <Display/>
+      <Details/>
+      <Footer/>
+    </div>
   );
 };
 

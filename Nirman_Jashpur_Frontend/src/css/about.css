@@ -1,0 +1,54 @@
+
+.section{
+  height: 600px;
+  width: 100%;
+  background-image: url("/public/images/scene.png");
+}
+.about-container{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  gap: 150px; 
+}
+.about-text{
+  align-items: center;
+}
+video{
+  height: 400px;
+  width: 600px;
+  background-color: transparent;
+  border-radius: 10px;
+}
+.about-container h1{
+  margin-top: 0px;
+  color: white;
+  font-size: 60px;
+}
+.about-container p{
+  color: #ff620d;
+  margin-top: 0px;
+  font-size: 30px;
+  font-weight: bold;
+  width: 500px;
+}
+.link-forward{
+  color: #ffffff;
+  height: 50px;
+  width: 100px;
+  background-color: rgb(66, 66, 66);
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 50px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.link-forward:hover {
+  background: #f0a307;
+  color : black;
+  background-color: white;
+  transform: scale(1.1); /* zoom slightly */
+}
