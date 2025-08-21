@@ -5,6 +5,7 @@
 }
 
 body { margin:0; background:var(--muted); color:var(--ink); }
+html { scrollbar-gutter: stable both-edges; }
 
 .app-container { display:flex; min-height:100vh; width:100%; }
 main { flex:1; padding:20px; overflow:auto; }

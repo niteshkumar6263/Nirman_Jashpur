@@ -1,2 +1,14 @@
-const WorkProgressPage = () => <h1 style={{ color: "black" }} >कार्य प्रगति</h1>;
+import React, { useState, useEffect, useMemo } from 'react';
+import Table from '../Components/Table.jsx';
+const WorkProgressPage = () => {
+  return (
+    <Table 
+  addButtonLabel="Add New Work"
+  onAddNew= "/add-work"
+  showAddButton={false}
+  onView="/work"
+/>
+  );
+};
+
 export default WorkProgressPage;
