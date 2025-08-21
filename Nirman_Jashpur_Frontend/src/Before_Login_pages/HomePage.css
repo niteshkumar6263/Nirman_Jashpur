@@ -1,0 +1,241 @@
+🌍 Global Reset
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Noto Sans Devanagari", sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+  /* line-height: 1.6; */
+  color: #222;
+}
+.Home-container{
+    overflow-x: hidden;
+}
+
+/* 🔹 Hero / About Section */
+.section {
+  background: url("https://www.nirmanjashpur.in/assets/images/bg.jpg") no-repeat center center/cover;
+  background-size: 100% 80%;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  left: 0;
+  top: -10px;
+  align-items: center;
+  padding: 80px 5%;
+  color: #fff;
+}
+
+.about-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.about-text p {
+  font-size: 20px;
+  color: #ff4d00;
+  margin-bottom: 10px;
+}
+
+.about-text h1 {
+  font-size: 48px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.link-forward {
+  padding: 12px 28px;
+  background: #222;
+  color: #fff;
+  font-size: 18px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.link-forward:hover {
+  background: #ff4d00;
+}
+
+.about-container video {
+  max-width: 500px;
+  border-radius: 10px;
+}
+/* 🔹 Info Section */
+.info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  padding: 70px 5%;
+  top: 80vh;
+  left: -30px;
+  background: #fff;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.info-container {
+  position: relative;
+  left: 0;
+}
+
+.info-container .box {
+  width: 300px;
+  height: 400px;
+  border-radius: 20px;
+  background: linear-gradient(to bottom, #ff9966, #ff5e62);
+}
+
+.overlap-img {
+  position: absolute;
+  top: -300px;
+  left: -30px;
+  width: 300px;
+  border-radius: 20px;
+}
+
+.info-text h1 {
+  font-size: 22px;
+  color: #ff4d00;
+  margin-bottom: 10px;
+}
+
+.info-text h2 {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.info-text ul {
+  list-style: none;
+}
+
+.info-text li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.info-text i {
+  color: #ff4d00;
+  margin-right: 10px;
+}
+
+/* 🔹 Details Section */
+.details {
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  position: absolute;
+  top: 160vh;
+  left: -25px;
+  padding: 80px 5%;
+  gap: 60px;
+  background: #f2f3f7;
+  flex-wrap: wrap;
+}
+.details-text {
+    position: relative;
+    margin-top: -150px;
+    margin-left: -100px;
+    margin-right: 40px;
+}
+.details-text h1 {
+  font-size: 28px;
+  color: #ff4d00;
+  margin-bottom: 20px;
+}
+
+.details-text p {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #333;
+}
+
+.details-image {
+  position: relative;
+    margin-top: -150px;
+}
+
+.details-image .box {
+  width: 400px;
+  height: 250px;
+  background: #ff9966;
+  border-radius: 20px;
+}
+
+.details-image img {
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: 400px;
+  border-radius: 20px;
+}
+
+/* 🔹 Footer */
+.footer {
+  background: #111;
+  color: #fff;
+  padding: 40px 5%;
+  position: absolute;
+  top: 240vh;
+  left: -25px;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+.footer .logo {
+  max-width: 120px;
+}
+
+.footer h1 {
+  font-size: 20px;
+  margin-bottom: 15px;
+  color: #ff4d00;
+}
+
+.footer ul {
+  list-style: none;
+}
+
+.footer a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  color: #ff4d00;
+}
+
+.footer-social button {
+  background: #ff4d00;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 20px;
+}
+
+.footer-bottom {
+  border-top: 1px solid #333;
+  padding-top: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.footer-bottom a {
+  color: #ff4d00;
+}
