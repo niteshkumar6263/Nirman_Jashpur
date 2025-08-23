@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./Table.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation } from "react-router-dom";
+
 
 const STORAGE_KEY = "tribal_work_data_v1";
 const defaultRows = [
@@ -71,6 +72,7 @@ const Table = ({
     const [sortDir, setSortDir] = useState('asc');
     const [toast, setToast] = useState('');
     const navigate = useNavigate();
+    const pathParts = location.pathname.split("/").filter(Boolean);
     
     useEffect(() => { saveData(data); }, [data]);
     
@@ -120,7 +122,14 @@ const Table = ({
     function toggleSort(idx) { const k = keyMap[idx]; if (!k) return; if (sortKey === k) setSortDir(d => d === 'asc' ? 'desc' : 'asc'); else { setSortKey(k); setSortDir('asc'); } }
   
     
-    const meta = { crumbs: 'Dashboard / Work / Work-List', title: 'निर्माण' };
+    const crumbs = pathParts
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" / ");
+
+  const meta = {
+    crumbs: crumbs,
+    title: "निर्माण",
+  };
   
     
     useEffect(() => {
@@ -150,7 +159,7 @@ const Table = ({
             })}><i className="fa-solid fa-power-off" /></button>
           </div>
         </div>
-        <div className="subbar"><span className="dot" /><h2>कार्य की सूची</h2></div>
+        <div className="subbar"><span className="dot" /><h2>कार्य की सूची-({addButtonLabel})</h2></div>
       </div>
       <div className="wrap">
         <section className="panel">
@@ -187,7 +196,7 @@ const Table = ({
        </section>
         <section className="panel table-card">
           <div className="table-head">
-            <div>कार्य सूची</div>
+            <div>कार्य सूची-({addButtonLabel})</div>
             <small>Show <select value={size} onChange={e=>{setSize(parseInt(e.target.value)||10); setPage(1);}}><option>10</option><option>25</option><option>50</option></select> entries</small>
           </div>
           <div className="p-body">

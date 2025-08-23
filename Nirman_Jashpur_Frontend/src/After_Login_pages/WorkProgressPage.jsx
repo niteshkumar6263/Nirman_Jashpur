@@ -3,10 +3,10 @@ import Table from '../Components/Table.jsx';
 const WorkProgressPage = () => {
   return (
     <Table 
-  addButtonLabel="Add New Work"
+  addButtonLabel="कार्य प्रगति स्तर"
   onAddNew= "/add-work"
   showAddButton={false}
-  onView="/work"
+  onView="/Work-In-Progress-Form"
 />
   );
 };

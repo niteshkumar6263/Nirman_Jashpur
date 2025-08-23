@@ -3,10 +3,10 @@ import Table from '../Components/Table.jsx';
 const TenderPage = () => {
   return (
     <Table 
-  addButtonLabel="Add New Work"
+  addButtonLabel="निविदा"
   onAddNew= "/add-work"
   showAddButton={false}
-  onView="/work"
+  onView="/Tender-Form"
 />
   );
 };

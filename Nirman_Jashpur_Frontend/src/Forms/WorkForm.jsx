@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './AddToWork.css';
+import './WorkForm.css';
 
 const STORAGE_KEY = 'tribal_work_data_v1';
 
