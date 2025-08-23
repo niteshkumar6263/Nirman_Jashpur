@@ -27,12 +27,6 @@ import WorkOrderPage from './After_Login_pages/WorkOrderPage.jsx';
 import WorkProgressPage from './After_Login_pages/WorkProgressPage.jsx';
 import ReportsPage from './After_Login_pages/ReportsPage.jsx';
 import WorkDetailsPage from './After_Login_pages/WorkDetails.jsx';
-import './index.css';
-import './css/about.css';
-import './css/heading.css';
-import './css/details.css';
-import './css/info.css';
-import './css/footer.css';
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
