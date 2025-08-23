@@ -1,7 +1,39 @@
 
 const WorkProposal = require('../models/WorkProposal');
+const WorkProgress = require('../models/WorkProgress');
+const WorkOrder = require('../models/WorkOrder');
+const WorkType = require('../models/WorkType');
+const Tender = require('../models/Tender');
 const User = require('../models/User');
 const { validationResult } = require('express-validator');
+
+// Helper function to get year filter for WorkProposal based on submissionDate
+const getYearFilter = (year) => {
+  if (!year) return {};
+  
+  const startDate = new Date(`${year}-01-01`);
+  const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
+  
+  return {
+    submissionDate: {
+      $gte: startDate,
+      $lte: endDate
+    }
+  };
+};
+
+// Helper function to create standardized response
+const createStandardResponse = (data, summary = {}, year = null) => {
+  return {
+    success: true,
+    data,
+    summary: {
+      ...summary,
+      reportYear: year,
+      generatedAt: new Date().toISOString()
+    }
+  };
+};
 
 // @desc    Get dashboard statistics
 // @route   GET /api/reports/dashboard
@@ -43,7 +75,7 @@ const getDashboardStats = async (req, res) => {
 
     res.json({
       success: true,
-      data: stats
+      data: stats,
     });
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
@@ -243,23 +275,17 @@ const getProgressReport = async (req, res) => {
 // ...existing code...
 
 
-// Helper function to get year filter
-const getYearFilter = (year) => {
-  if (!year) return {};
-  
-  const startDate = new Date(`${year}-01-01`);
-  const endDate = new Date(`${year}-12-31T23:59:59.999Z`);
-  
-  return {
-    entryDate: {
-      $gte: startDate,
-      $lte: endDate
-    }
-  };
-};
-
 exports.getAgencyWiseReport = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
     const { year, agency } = req.query;
     let filter = getYearFilter(year);
     
@@ -267,168 +293,174 @@ exports.getAgencyWiseReport = async (req, res) => {
       filter.workAgency = new RegExp(agency, 'i');
     }
     
-    // Aggregate data from all relevant collections
-    const [workProgressData, workOrderData, tenderData] = await Promise.all([
-      WorkProgress.aggregate([
-        { $match: filter },
-        {
-          $group: {
-            _id: '$workAgency',
-            totalWorks: { $sum: 1 },
-            pendingWorks: {
-              $sum: { $cond: [{ $eq: ['$workProgressStage', 'Pending'] }, 1, 0] }
-            },
-            inProgressWorks: {
-              $sum: { $cond: [{ $eq: ['$workProgressStage', 'In Progress'] }, 1, 0] }
-            },
-            completedWorks: {
-              $sum: { $cond: [{ $eq: ['$workProgressStage', 'Completed'] }, 1, 0] }
-            }
-          }
-        },
-        { $sort: { totalWorks: -1 } }
-      ]),
-      
-      WorkOrder.aggregate([
-        { $match: filter },
-        {
-          $group: {
-            _id: '$workAgency',
-            totalOrders: { $sum: 1 },
-            pendingOrders: {
-              $sum: { $cond: [{ $eq: ['$orderStatus', 'Pending'] }, 1, 0] }
-            },
-            issuedOrders: {
-              $sum: { $cond: [{ $eq: ['$orderStatus', 'Issued'] }, 1, 0] }
-            },
-            completedOrders: {
-              $sum: { $cond: [{ $eq: ['$orderStatus', 'Completed'] }, 1, 0] }
-            }
+    const agencyWiseData = await WorkProposal.aggregate([
+      { $match: filter },
+      {
+        $group: {
+          _id: '$workAgency',
+          totalWorks: { $sum: 1 },
+          totalSanctionAmount: { $sum: '$sanctionAmount' },
+          pendingTechnical: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Pending Technical Approval'] }, 1, 0] }
+          },
+          pendingAdministrative: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Pending Administrative Approval'] }, 1, 0] }
+          },
+          inProgress: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Work In Progress'] }, 1, 0] }
+          },
+          completed: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Work Completed'] }, 1, 0] }
+          },
+          totalApprovedAmount: { $sum: '$administrativeApproval.approvedAmount' },
+          totalReleasedAmount: { $sum: '$workProgress.totalAmountReleasedSoFar' },
+          avgProgressPercentage: { $avg: '$workProgress.progressPercentage' },
+          schemes: { $addToSet: '$scheme' },
+          departments: { $addToSet: '$workDepartment' }
+        }
+      },
+      {
+        $project: {
+          agency: '$_id',
+          totalWorks: 1,
+          totalSanctionAmount: 1,
+          pendingTechnical: 1,
+          pendingAdministrative: 1,
+          inProgress: 1,
+          completed: 1,
+          totalApprovedAmount: { $ifNull: ['$totalApprovedAmount', 0] },
+          totalReleasedAmount: { $ifNull: ['$totalReleasedAmount', 0] },
+          avgProgressPercentage: { $ifNull: ['$avgProgressPercentage', 0] },
+          totalSchemes: { $size: '$schemes' },
+          totalDepartments: { $size: '$departments' },
+          completionRate: {
+            $multiply: [
+              { $divide: ['$completed', '$totalWorks'] },
+              100
+            ]
           }
         }
-      ]),
-      
-      Tender.aggregate([
-        { $match: filter },
-        {
-          $group: {
-            _id: '$workAgency',
-            totalTenders: { $sum: 1 },
-            avgTenderAmount: { $avg: '$tenderAmount' },
-            totalTenderValue: { $sum: '$tenderAmount' }
-          }
-        }
-      ])
+      },
+      { $sort: { totalWorks: -1 } }
     ]);
     
-    // Combine data from all sources
-    const agencyMap = new Map();
+    const summary = {
+      totalAgencies: agencyWiseData.length,
+      totalWorks: agencyWiseData.reduce((sum, item) => sum + item.totalWorks, 0),
+      totalSanctionAmount: agencyWiseData.reduce((sum, item) => sum + item.totalSanctionAmount, 0)
+    };
     
-    workProgressData.forEach(item => {
-      agencyMap.set(item._id, { ...item, agency: item._id });
-    });
-    
-    workOrderData.forEach(item => {
-      const existing = agencyMap.get(item._id) || { agency: item._id };
-      agencyMap.set(item._id, { ...existing, ...item });
-    });
-    
-    tenderData.forEach(item => {
-      const existing = agencyMap.get(item._id) || { agency: item._id };
-      agencyMap.set(item._id, { ...existing, ...item });
-    });
-    
-    const result = Array.from(agencyMap.values()).map(item => ({
-      agency: item.agency,
-      totalWorks: item.totalWorks || 0,
-      pendingWorks: item.pendingWorks || 0,
-      inProgressWorks: item.inProgressWorks || 0,
-      completedWorks: item.completedWorks || 0,
-      totalOrders: item.totalOrders || 0,
-      pendingOrders: item.pendingOrders || 0,
-      issuedOrders: item.issuedOrders || 0,
-      completedOrders: item.completedOrders || 0,
-      totalTenders: item.totalTenders || 0,
-      avgTenderAmount: item.avgTenderAmount || 0,
-      totalTenderValue: item.totalTenderValue || 0
-    }));
-    
-    res.json({
-      data: result,
-      summary: {
-        totalAgencies: result.length,
-        reportYear: year,
-        generatedAt: new Date().toISOString()
-      }
-    });
+    res.json(createStandardResponse(agencyWiseData, summary, year));
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error in getAgencyWiseReport:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error while generating agency-wise report', 
+      error: error.message 
+    });
   }
 };
 
 exports.getBlockWiseReport = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
     const { year, block } = req.query;
     let filter = getYearFilter(year);
     
     if (block) {
-      filter.area = new RegExp(block, 'i');
+      filter.city = new RegExp(block, 'i');
     }
     
-    const blockWiseData = await WorkProgress.aggregate([
+    const blockWiseData = await WorkProposal.aggregate([
       { $match: filter },
       {
         $group: {
-          _id: '$area',
+          _id: '$city',
           totalWorks: { $sum: 1 },
-          pendingWorks: {
-            $sum: { $cond: [{ $eq: ['$workProgressStage', 'Pending'] }, 1, 0] }
+          totalSanctionAmount: { $sum: '$sanctionAmount' },
+          pendingTechnical: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Pending Technical Approval'] }, 1, 0] }
           },
-          inProgressWorks: {
-            $sum: { $cond: [{ $eq: ['$workProgressStage', 'In Progress'] }, 1, 0] }
+          pendingAdministrative: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Pending Administrative Approval'] }, 1, 0] }
           },
-          completedWorks: {
-            $sum: { $cond: [{ $eq: ['$workProgressStage', 'Completed'] }, 1, 0] }
+          inProgress: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Work In Progress'] }, 1, 0] }
           },
+          completed: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Work Completed'] }, 1, 0] }
+          },
+          totalApprovedAmount: { $sum: '$administrativeApproval.approvedAmount' },
+          totalReleasedAmount: { $sum: '$workProgress.totalAmountReleasedSoFar' },
           agencies: { $addToSet: '$workAgency' },
-          schemes: { $addToSet: '$scheme' }
+          schemes: { $addToSet: '$scheme' },
+          departments: { $addToSet: '$workDepartment' }
         }
       },
       {
         $project: {
           block: '$_id',
           totalWorks: 1,
-          pendingWorks: 1,
-          inProgressWorks: 1,
-          completedWorks: 1,
-          completionRate: {
-            $multiply: [
-              { $divide: ['$completedWorks', '$totalWorks'] },
-              100
-            ]
-          },
+          totalSanctionAmount: 1,
+          pendingTechnical: 1,
+          pendingAdministrative: 1,
+          inProgress: 1,
+          completed: 1,
+          totalApprovedAmount: { $ifNull: ['$totalApprovedAmount', 0] },
+          totalReleasedAmount: { $ifNull: ['$totalReleasedAmount', 0] },
           totalAgencies: { $size: '$agencies' },
-          totalSchemes: { $size: '$schemes' }
+          totalSchemes: { $size: '$schemes' },
+          totalDepartments: { $size: '$departments' },
+          completionRate: {
+            $cond: [
+              { $gt: ['$totalWorks', 0] },
+              { $multiply: [{ $divide: ['$completed', '$totalWorks'] }, 100] },
+              0
+            ]
+          }
         }
       },
       { $sort: { totalWorks: -1 } }
     ]);
     
-    res.json({
-      data: blockWiseData,
-      summary: {
-        totalBlocks: blockWiseData.length,
-        reportYear: year,
-        generatedAt: new Date().toISOString()
-      }
-    });
+    const summary = {
+      totalBlocks: blockWiseData.length,
+      totalWorks: blockWiseData.reduce((sum, item) => sum + item.totalWorks, 0),
+      totalSanctionAmount: blockWiseData.reduce((sum, item) => sum + item.totalSanctionAmount, 0),
+      avgCompletionRate: blockWiseData.length > 0 ? 
+        (blockWiseData.reduce((sum, item) => sum + item.completionRate, 0) / blockWiseData.length) : 0
+    };
+    
+    res.json(createStandardResponse(blockWiseData, summary, year));
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error in getBlockWiseReport:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error while generating block-wise report', 
+      error: error.message 
+    });
   }
 };
 
 exports.getSchemeWiseReport = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
     const { year, scheme } = req.query;
     let filter = getYearFilter(year);
     
@@ -436,79 +468,120 @@ exports.getSchemeWiseReport = async (req, res) => {
       filter.scheme = new RegExp(scheme, 'i');
     }
     
-    const schemeWiseData = await WorkProgress.aggregate([
+    const schemeWiseData = await WorkProposal.aggregate([
       { $match: filter },
       {
         $group: {
           _id: '$scheme',
           totalWorks: { $sum: 1 },
-          pendingWorks: {
-            $sum: { $cond: [{ $eq: ['$workProgressStage', 'Pending'] }, 1, 0] }
+          totalSanctionAmount: { $sum: '$sanctionAmount' },
+          pendingTechnical: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Pending Technical Approval'] }, 1, 0] }
           },
-          inProgressWorks: {
-            $sum: { $cond: [{ $eq: ['$workProgressStage', 'In Progress'] }, 1, 0] }
+          pendingAdministrative: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Pending Administrative Approval'] }, 1, 0] }
           },
-          completedWorks: {
-            $sum: { $cond: [{ $eq: ['$workProgressStage', 'Completed'] }, 1, 0] }
+          inProgress: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Work In Progress'] }, 1, 0] }
           },
-          areas: { $addToSet: '$area' },
-          agencies: { $addToSet: '$workAgency' }
+          completed: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Work Completed'] }, 1, 0] }
+          },
+          totalApprovedAmount: { $sum: '$administrativeApproval.approvedAmount' },
+          totalReleasedAmount: { $sum: '$workProgress.totalAmountReleasedSoFar' },
+          areas: { $addToSet: '$city' },
+          agencies: { $addToSet: '$workAgency' },
+          departments: { $addToSet: '$workDepartment' }
         }
       },
       {
         $project: {
           scheme: '$_id',
           totalWorks: 1,
-          pendingWorks: 1,
-          inProgressWorks: 1,
-          completedWorks: 1,
-          completionRate: {
-            $multiply: [
-              { $divide: ['$completedWorks', '$totalWorks'] },
-              100
-            ]
-          },
+          totalSanctionAmount: 1,
+          pendingTechnical: 1,
+          pendingAdministrative: 1,
+          inProgress: 1,
+          completed: 1,
+          totalApprovedAmount: { $ifNull: ['$totalApprovedAmount', 0] },
+          totalReleasedAmount: { $ifNull: ['$totalReleasedAmount', 0] },
           totalAreas: { $size: '$areas' },
-          totalAgencies: { $size: '$agencies' }
+          totalAgencies: { $size: '$agencies' },
+          totalDepartments: { $size: '$departments' },
+          completionRate: {
+            $cond: [
+              { $gt: ['$totalWorks', 0] },
+              { $multiply: [{ $divide: ['$completed', '$totalWorks'] }, 100] },
+              0
+            ]
+          }
         }
       },
       { $sort: { totalWorks: -1 } }
     ]);
     
-    res.json({
-      data: schemeWiseData,
-      summary: {
-        totalSchemes: schemeWiseData.length,
-        reportYear: year,
-        generatedAt: new Date().toISOString()
-      }
-    });
+    const summary = {
+      totalSchemes: schemeWiseData.length,
+      totalWorks: schemeWiseData.reduce((sum, item) => sum + item.totalWorks, 0),
+      totalSanctionAmount: schemeWiseData.reduce((sum, item) => sum + item.totalSanctionAmount, 0),
+      avgCompletionRate: schemeWiseData.length > 0 ? 
+        (schemeWiseData.reduce((sum, item) => sum + item.completionRate, 0) / schemeWiseData.length) : 0
+    };
+    
+    res.json(createStandardResponse(schemeWiseData, summary, year));
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error in getSchemeWiseReport:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error while generating scheme-wise report', 
+      error: error.message 
+    });
   }
 };
 
 exports.getPendingWorksReport = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
     const { year } = req.query;
     let filter = getYearFilter(year);
-    filter.workProgressStage = 'Pending';
     
-    const pendingWorks = await WorkProgress.find(filter)
-      .sort({ entryDate: -1 })
+    // Add filter for pending statuses
+    filter.currentStatus = { 
+      $in: [
+        'Pending Technical Approval', 
+        'Pending Administrative Approval',
+        'Pending Tender',
+        'Pending Work Order'
+      ] 
+    };
+    
+    const pendingWorks = await WorkProposal.find(filter)
+      .select('serialNumber nameOfWork workAgency scheme currentStatus submissionDate sanctionAmount city ward workDepartment appointedEngineer')
+      .populate('submittedBy', 'fullName department')
+      .sort({ submissionDate: -1 })
       .lean();
     
-    const summary = await WorkProgress.aggregate([
+    const summary = await WorkProposal.aggregate([
       { $match: filter },
       {
         $group: {
           _id: null,
           totalPendingWorks: { $sum: 1 },
-          agencyWise: {
+          totalPendingAmount: { $sum: '$sanctionAmount' },
+          pendingByStatus: {
             $push: {
+              status: '$currentStatus',
               agency: '$workAgency',
-              area: '$area',
-              scheme: '$scheme'
+              scheme: '$scheme',
+              department: '$workDepartment'
             }
           }
         }
@@ -516,24 +589,44 @@ exports.getPendingWorksReport = async (req, res) => {
       {
         $project: {
           totalPendingWorks: 1,
-          agencyWiseCount: {
+          totalPendingAmount: 1,
+          statusBreakdown: {
+            $reduce: {
+              input: '$pendingByStatus',
+              initialValue: {},
+              in: {
+                $mergeObjects: [
+                  '$$value',
+                  {
+                    $arrayToObject: [
+                      [{
+                        k: '$$this.status',
+                        v: { $add: [{ $ifNull: [{ $getField: { field: '$$this.status', input: '$$value' } }, 0] }, 1] }
+                      }]
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          uniqueAgencies: {
             $size: {
               $setUnion: {
                 $map: {
-                  input: '$agencyWise',
+                  input: '$pendingByStatus',
                   as: 'item',
                   in: '$$item.agency'
                 }
               }
             }
           },
-          areaWiseCount: {
+          uniqueSchemes: {
             $size: {
               $setUnion: {
                 $map: {
-                  input: '$agencyWise',
+                  input: '$pendingByStatus',
                   as: 'item',
-                  in: '$$item.area'
+                  in: '$$item.scheme'
                 }
               }
             }
@@ -542,111 +635,165 @@ exports.getPendingWorksReport = async (req, res) => {
       }
     ]);
     
-    res.json({
-      data: pendingWorks,
-      summary: summary[0] || {
-        totalPendingWorks: 0,
-        agencyWiseCount: 0,
-        areaWiseCount: 0
-      },
-      reportYear: year,
-      generatedAt: new Date().toISOString()
-    });
+    const summaryData = summary[0] || {
+      totalPendingWorks: 0,
+      totalPendingAmount: 0,
+      statusBreakdown: {},
+      uniqueAgencies: 0,
+      uniqueSchemes: 0
+    };
+    
+    res.json(createStandardResponse(pendingWorks, summaryData, year));
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error in getPendingWorksReport:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error while generating pending works report', 
+      error: error.message 
+    });
   }
 };
 
 exports.getFinalStatusReport = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
     const { year } = req.query;
     const filter = getYearFilter(year);
     
-    const finalStatus = await WorkProgress.aggregate([
+    const finalStatus = await WorkProposal.aggregate([
       { $match: filter },
       {
         $group: {
-          _id: '$workProgressStage',
+          _id: '$currentStatus',
           count: { $sum: 1 },
+          totalAmount: { $sum: '$sanctionAmount' },
           works: {
             $push: {
-              workName: '$workName',
-              area: '$area',
+              serialNumber: '$serialNumber',
+              nameOfWork: '$nameOfWork',
               workAgency: '$workAgency',
               scheme: '$scheme',
-              entryDate: '$entryDate',
-              lastModified: '$lastModified'
+              submissionDate: '$submissionDate',
+              sanctionAmount: '$sanctionAmount'
             }
           }
-        }
-      },
-      {
-        $project: {
-          status: '$_id',
-          count: 1,
-          percentage: {
-            $multiply: [
-              {
-                $divide: [
-                  '$count',
-                  { $sum: '$count' }
-                ]
-              },
-              100
-            ]
-          },
-          works: 1
         }
       },
       { $sort: { count: -1 } }
     ]);
     
     const totalWorks = finalStatus.reduce((sum, item) => sum + item.count, 0);
+    const totalAmount = finalStatus.reduce((sum, item) => sum + item.totalAmount, 0);
     
-    // Calculate correct percentages
+    // Calculate correct percentages and categorize by progress stage
     const statusWithPercentages = finalStatus.map(item => ({
-      ...item,
-      percentage: totalWorks > 0 ? ((item.count / totalWorks) * 100).toFixed(2) : 0
+      status: item._id,
+      count: item.count,
+      totalAmount: item.totalAmount,
+      percentage: totalWorks > 0 ? parseFloat(((item.count / totalWorks) * 100).toFixed(2)) : 0,
+      works: item.works,
+      // Categorize into broader categories
+      category: categorizeStatus(item._id)
     }));
     
-    res.json({
-      data: statusWithPercentages,
-      summary: {
-        totalWorks,
-        reportYear: year,
-        generatedAt: new Date().toISOString()
+    // Group by categories for final status overview
+    const categoryStats = statusWithPercentages.reduce((acc, item) => {
+      if (!acc[item.category]) {
+        acc[item.category] = { count: 0, totalAmount: 0, percentage: 0 };
       }
-    });
+      acc[item.category].count += item.count;
+      acc[item.category].totalAmount += item.totalAmount;
+      acc[item.category].percentage += item.percentage;
+      return acc;
+    }, {});
+    
+    const summary = {
+      totalWorks,
+      totalAmount,
+      categoryBreakdown: categoryStats,
+      detailedBreakdown: statusWithPercentages
+    };
+    
+    res.json(createStandardResponse(statusWithPercentages, summary, year));
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error in getFinalStatusReport:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error while generating final status report', 
+      error: error.message 
+    });
   }
 };
 
+// Helper function to categorize statuses
+function categorizeStatus(status) {
+  if (status.includes('Pending') || status.includes('Rejected')) {
+    return 'Pending';
+  } else if (status === 'Work Completed') {
+    return 'Completed';
+  } else {
+    return 'In Progress';
+  }
+}
+
 exports.getEngineerWiseReport = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
     const { year, engineer } = req.query;
     let filter = getYearFilter(year);
     
     if (engineer) {
-      filter.engineer = new RegExp(engineer, 'i');
+      filter.appointedEngineer = new RegExp(engineer, 'i');
     }
     
-    const engineerWiseData = await WorkType.aggregate([
+    const engineerWiseData = await WorkProposal.aggregate([
       { $match: filter },
       {
         $group: {
-          _id: '$engineer',
+          _id: '$appointedEngineer',
           totalAssignedWorks: { $sum: 1 },
-          departments: { $addToSet: '$department' },
-          areas: { $addToSet: '$area' },
+          totalSanctionAmount: { $sum: '$sanctionAmount' },
+          pendingTechnical: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Pending Technical Approval'] }, 1, 0] }
+          },
+          pendingAdministrative: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Pending Administrative Approval'] }, 1, 0] }
+          },
+          inProgress: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Work In Progress'] }, 1, 0] }
+          },
+          completed: {
+            $sum: { $cond: [{ $eq: ['$currentStatus', 'Work Completed'] }, 1, 0] }
+          },
+          totalApprovedAmount: { $sum: '$administrativeApproval.approvedAmount' },
+          totalReleasedAmount: { $sum: '$workProgress.totalAmountReleasedSoFar' },
+          departments: { $addToSet: '$workDepartment' },
+          areas: { $addToSet: '$city' },
           schemes: { $addToSet: '$scheme' },
+          agencies: { $addToSet: '$workAgency' },
           workTypes: {
             $push: {
-              workType: '$workType',
-              department: '$department',
-              area: '$area',
-              priority: '$priority',
-              estimatedCost: '$estimatedCost'
+              typeOfWork: '$typeOfWork',
+              nameOfWork: '$nameOfWork',
+              currentStatus: '$currentStatus',
+              sanctionAmount: '$sanctionAmount',
+              scheme: '$scheme'
             }
           }
         }
@@ -655,55 +802,176 @@ exports.getEngineerWiseReport = async (req, res) => {
         $project: {
           engineer: '$_id',
           totalAssignedWorks: 1,
+          totalSanctionAmount: 1,
+          pendingTechnical: 1,
+          pendingAdministrative: 1,
+          inProgress: 1,
+          completed: 1,
+          totalApprovedAmount: { $ifNull: ['$totalApprovedAmount', 0] },
+          totalReleasedAmount: { $ifNull: ['$totalReleasedAmount', 0] },
           totalDepartments: { $size: '$departments' },
           totalAreas: { $size: '$areas' },
           totalSchemes: { $size: '$schemes' },
-          workTypes: 1
+          totalAgencies: { $size: '$agencies' },
+          completionRate: {
+            $cond: [
+              { $gt: ['$totalAssignedWorks', 0] },
+              { $multiply: [{ $divide: ['$completed', '$totalAssignedWorks'] }, 100] },
+              0
+            ]
+          },
+          workTypes: { $slice: ['$workTypes', 10] } // Limit to 10 recent works for performance
         }
       },
       { $sort: { totalAssignedWorks: -1 } }
     ]);
     
-    res.json({
-      data: engineerWiseData,
-      summary: {
-        totalEngineers: engineerWiseData.length,
-        reportYear: year,
-        generatedAt: new Date().toISOString()
-      }
-    });
+    const summary = {
+      totalEngineers: engineerWiseData.length,
+      totalWorks: engineerWiseData.reduce((sum, item) => sum + item.totalAssignedWorks, 0),
+      totalSanctionAmount: engineerWiseData.reduce((sum, item) => sum + item.totalSanctionAmount, 0),
+      avgWorksPerEngineer: engineerWiseData.length > 0 ? 
+        (engineerWiseData.reduce((sum, item) => sum + item.totalAssignedWorks, 0) / engineerWiseData.length) : 0,
+      avgCompletionRate: engineerWiseData.length > 0 ? 
+        (engineerWiseData.reduce((sum, item) => sum + item.completionRate, 0) / engineerWiseData.length) : 0
+    };
+    
+    res.json(createStandardResponse(engineerWiseData, summary, year));
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error in getEngineerWiseReport:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error while generating engineer-wise report', 
+      error: error.message 
+    });
   }
 };
 
 exports.getPhotoMissingReport = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
     const { year } = req.query;
     const filter = getYearFilter(year);
     
-    // This is a placeholder implementation
-    // In a real application, you would have a photos field or separate photos collection
-    const worksWithoutPhotos = await WorkProgress.find({
+    // Find works that don't have associated photos
+    const worksWithoutPhotos = await WorkProposal.find({
       ...filter,
-      // Assuming photos field exists and is empty or null
       $or: [
-        { photos: { $exists: false } },
-        { photos: { $size: 0 } },
-        { photos: null }
+        { workLocationImage: { $exists: false } },
+        { workLocationImage: { $size: 0 } },
+        { workLocationImage: null },
+        { 'workProgress.progressImages': { $exists: false } },
+        { 'workProgress.progressImages': { $size: 0 } },
+        { 'workProgress.progressImages': null }
       ]
-    }).sort({ entryDate: -1 }).lean();
+    })
+    .select('serialNumber nameOfWork workAgency scheme currentStatus submissionDate sanctionAmount city ward workDepartment appointedEngineer')
+    .populate('submittedBy', 'fullName department')
+    .sort({ submissionDate: -1 })
+    .lean();
     
-    res.json({
-      data: worksWithoutPhotos,
-      summary: {
-        totalWorksWithoutPhotos: worksWithoutPhotos.length,
-        reportYear: year,
-        generatedAt: new Date().toISOString()
+    // Get summary statistics
+    const summaryData = await WorkProposal.aggregate([
+      { $match: filter },
+      {
+        $facet: {
+          totalWorks: [{ $count: 'count' }],
+          worksWithoutLocationPhotos: [
+            {
+              $match: {
+                $or: [
+                  { workLocationImage: { $exists: false } },
+                  { workLocationImage: { $size: 0 } },
+                  { workLocationImage: null }
+                ]
+              }
+            },
+            { $count: 'count' }
+          ],
+          worksWithoutProgressPhotos: [
+            {
+              $match: {
+                $or: [
+                  { 'workProgress.progressImages': { $exists: false } },
+                  { 'workProgress.progressImages': { $size: 0 } },
+                  { 'workProgress.progressImages': null }
+                ]
+              }
+            },
+            { $count: 'count' }
+          ],
+          statusBreakdown: [
+            {
+              $match: {
+                $or: [
+                  { workLocationImage: { $exists: false } },
+                  { workLocationImage: { $size: 0 } },
+                  { workLocationImage: null },
+                  { 'workProgress.progressImages': { $exists: false } },
+                  { 'workProgress.progressImages': { $size: 0 } },
+                  { 'workProgress.progressImages': null }
+                ]
+              }
+            },
+            {
+              $group: {
+                _id: '$currentStatus',
+                count: { $sum: 1 }
+              }
+            }
+          ],
+          agencyBreakdown: [
+            {
+              $match: {
+                $or: [
+                  { workLocationImage: { $exists: false } },
+                  { workLocationImage: { $size: 0 } },
+                  { workLocationImage: null },
+                  { 'workProgress.progressImages': { $exists: false } },
+                  { 'workProgress.progressImages': { $size: 0 } },
+                  { 'workProgress.progressImages': null }
+                ]
+              }
+            },
+            {
+              $group: {
+                _id: '$workAgency',
+                count: { $sum: 1 }
+              }
+            },
+            { $sort: { count: -1 } }
+          ]
+        }
       }
-    });
+    ]);
+    
+    const summary = {
+      totalWorksWithoutPhotos: worksWithoutPhotos.length,
+      totalWorks: summaryData[0].totalWorks[0]?.count || 0,
+      worksWithoutLocationPhotos: summaryData[0].worksWithoutLocationPhotos[0]?.count || 0,
+      worksWithoutProgressPhotos: summaryData[0].worksWithoutProgressPhotos[0]?.count || 0,
+      statusBreakdown: summaryData[0].statusBreakdown || [],
+      agencyBreakdown: summaryData[0].agencyBreakdown || [],
+      percentageWithoutPhotos: summaryData[0].totalWorks[0]?.count > 0 ? 
+        ((worksWithoutPhotos.length / summaryData[0].totalWorks[0].count) * 100).toFixed(2) : 0
+    };
+    
+    res.json(createStandardResponse(worksWithoutPhotos, summary, year));
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error in getPhotoMissingReport:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error while generating photo missing report', 
+      error: error.message 
+    });
   }
 };
 
