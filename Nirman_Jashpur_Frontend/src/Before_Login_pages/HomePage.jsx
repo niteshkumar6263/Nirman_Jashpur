@@ -1,9 +1,17 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import './HomePage.css'
+import ImageSlider from "./ImageSlider.jsx";
 const HomePage = () => {
   const navigate = useNavigate();
-
+  const slide = [
+    {url:	'https://www.nirmanjashpur.in/web_assets/images/njsp1.jpg', title : 'image1'},
+    {url:	'https://www.nirmanjashpur.in/web_assets/images/njsp2.jpg', title : 'image2'},
+    {url:	'https://www.nirmanjashpur.in/web_assets/images/njsp3.jpg', title : 'image3'},
+    {url:	'https://www.nirmanjashpur.in/web_assets/images/njsp4.jpg', title : 'image4' },
+    {url:	'https://www.nirmanjashpur.in/web_assets/images/njsp5.jpg', title : 'image5'},
+    {url:	'https://www.nirmanjashpur.in/web_assets/images/njsp6.jpg', title : 'image6'},
+  ]
   return (
     <div className="home-container">
       {/* 🔹 About Section */}
@@ -84,8 +92,7 @@ const HomePage = () => {
           </p>
         </div>
         <div className="details-image">
-          <div className="box"></div>
-          <img src="/images/project.png" alt="image-sliding" />
+            <ImageSlider slides = {slide}  alt="image-sliding" />
         </div>
       </section>
 
