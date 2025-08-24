@@ -73,8 +73,8 @@ const App = () => {
               <>
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/gis" element={<GISPage />} />
-                <Route path="/work" element={<WorkPage onLogout={() => setIsLoggedIn(false)} />} />
-                <Route path="/Technical-Approval" element={<TechnicalApprovalPage onLogout={() => setIsLoggedIn(false)} />} />
+                <Route path="/work" element={<WorkPage  />} />
+                <Route path="/Technical-Approval" element={<TechnicalApprovalPage  />} />
                 <Route path="/Administrative-Approval" element={<AdministrativeApprovalPage />} />
                 <Route path="/Tender" element={<TenderPage />} />
                 <Route path="/Work-Order" element={<WorkOrderPage />} />
