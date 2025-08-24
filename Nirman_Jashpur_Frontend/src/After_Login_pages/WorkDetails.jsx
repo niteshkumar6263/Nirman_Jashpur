@@ -167,7 +167,7 @@ const WorkDetails = ({ onLogout, onBack, onAcceptWork }) => {
                     <span>{workData.vname}</span>
                   </div>
                   <div className="detail-row">
-                    <label>कार्य एजेंसी</label>
+                    <label>कार्य विभाग</label>
                     <span>{workData.agency}</span>
                   </div>
                   <div className="detail-row">
@@ -183,41 +183,31 @@ const WorkDetails = ({ onLogout, onBack, onAcceptWork }) => {
                     <span>{workData.amount}</span>
                   </div>
                   <div className="detail-row">
-                    <label>कार्य की स्थिति</label>
-                    <span className={`status-badge ${workData.status === 'समाप्त' ? 'completed' : 'pending'}`}>
-                      {workData.status}
-                    </span>
+                    <label>उपयोगकर्ता विभाग</label>
+                    <span>{workData.subDept || '-'}</span>
                   </div>
                   <div className="detail-row">
-                    <label>अंतिम संशोधन</label>
-                    <span>{workData.modified}</span>
+                    <label>स्वीकृतकर्ता विभाग</label>
+                    <span>{workData.centralDept}</span>
                   </div>
                   <div className="detail-row">
-                    <label>अनुमानित लागत</label>
-                    <span>{workData.agency}</span>
+                    <label>वित्तीय वर्ष</label>
+                    <span>{workData.year}</span>
                   </div>
                   <div className="detail-row">
-                    <label>स्वीकृत मद</label>
-                    <span>{workData.agency}</span>
-                  </div>
-                  <div className="detail-row">
-                    <label>निष्पादन कार्यालय</label>
-                    <span>{workData.agency}</span>
+                    <label>विधानसभा</label>
+                    <span>{workData.vidhanSabha}</span>
                   </div>
                   <div className="detail-row">
                     <label>दिनांक(Longitude)</label>
-                    <span>-</span>
+                    <span>{workData.longitude}</span>
                   </div>
                   <div className="detail-row">
                     <label>अक्षांश(Latitude)</label>
-                    <span>-</span>
+                    <span>{workData.latitude}</span>
                   </div>
                   <div className="detail-row">
-                    <label>विकास</label>
-                    <span>हाँ/नहीं</span>
-                  </div>
-                  <div className="detail-row">
-                    <label>कार्य स्वीकृति दिनांक की तिथि</label>
+                    <label>कार्य समाप्ति अनुमानित की दिनांक</label>
                     <span>15-09-2025</span>
                   </div>
                 </div>
@@ -414,6 +404,52 @@ const WorkDetails = ({ onLogout, onBack, onAcceptWork }) => {
                 </div>
               </div>
             </section>
+              
+              <section className="panel approval-section">
+                <div className="panel-header approval-header">
+                  <h3>कार्य आदेश</h3>
+                </div>
+                <div className="p-body">
+                  <div className="custom-table-container">
+                    <table className="custom-table">
+                      <tbody>
+                        <tr>
+                          <td>कार्य आदेश क्रमांक</td>
+                          <td style={{fontWeight:'bold'}}>{workData.orderNumber || '-'}</td>
+                        </tr>
+                        <tr>
+                          <td>कार्य आदेश की दिनांक</td>
+                          <td style={{fontWeight:'bold'}}>{workData.orderDate || '-'}</td>
+                        </tr>
+                        <tr>
+                          <td>कार्य आदेश राशि</td>
+                          <td style={{fontWeight:'bold'}}>{workData.orderAmount || '-'}</td>
+                        </tr>
+                        <tr>
+                          <td>कार्य आदेश प्रारम्भ अनुमामित की दिनांक</td>
+                          <td style={{fontWeight:'bold'}}>{workData.orderStartDate || '-'}</td>
+                        </tr>
+                        <tr>
+                          <td>कार्य आदेश समाप्ति अनुमामित की दिनांक</td>
+                          <td style={{fontWeight:'bold'}}>{workData.orderEndDate || '-'}</td>
+                        </tr>
+                        <tr>
+                          <td>ठेकेदार / ग्रामपंचायत</td>
+                          <td style={{fontWeight:'bold'}}>{workData.contractor || workData.vname || '-'}</td>
+                        </tr>
+                        <tr>
+                          <td>टिप्पणी</td>
+                          <td style={{fontWeight:'bold'}}>{workData.orderNote || '-'}</td>
+                        </tr>
+                        <tr>
+                          <td>संलग्न फाइल</td>
+                          <td style={{fontWeight:'bold'}}>{workData.orderFile || '-'}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
           </div>
         </div>
       </div>

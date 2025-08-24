@@ -64,7 +64,7 @@ const Table = ({
   onView, 
 }) => {
    const [data, setData] = useState(loadData());
-    const [filters, setFilters] = useState({ type: '', plan: '', q: '' });
+  const [filters, setFilters] = useState({ type: '', plan: '', q: '', city: '' });
     const [page, setPage] = useState(1);
     const [size, setSize] = useState(10);
     const [sortKey, setSortKey] = useState(null);
@@ -158,12 +158,13 @@ const Table = ({
             <div className="filters">
               <div className="field"><label>कार्य के प्रकार</label><select className="select" value={filters.type} onChange={e=>{setFilters(f=>({...f,type:e.target.value})); setPage(1);}}><option value="">--कार्य के प्रकार चुने--</option><option>सीसी रोड</option><option>पंचायती भवन</option><option>नाली निर्माण</option><option>सड़क मरम्मत</option></select></div>
               <div className="field"><label>कार्य विभाग</label><select className="select"><option value="">--कार्य विभाग चुने--</option><option>जिला पंचायत</option><option>राजस्व</option><option>जनपद</option></select></div>
-              <div className="field"><label>विधानसभा</label><select className="select"><option value="">--विधानसभा चुने--</option><option>Bagicha</option><option>Bhudhadand</option></select></div>
+              <div className="field"><label>विधानसभा</label><select className="select"><option value="">--विधानसभा चुने--</option><option>कुनकुरी</option><option>जशपुर</option><option>पत्थलगांव</option></select></div>
               <div className="field"><label>इंजीनियर</label><select className="select"><option value="">--इंजीनियर चुने--</option><option>इंजिनियर A</option><option>इंजिनियर B</option></select></div>
               <div className="field"><label>योजना</label><select className="select" value={filters.plan} onChange={e=>{setFilters(f=>({...f,plan:e.target.value})); setPage(1);}}><option value="">--योजना चुने--</option><option>Suguja Chhetra Pradhikaran</option><option>Block Plan</option></select></div>
               <div className="field"><label>कार्य विवरण</label><select className="select"><option value="">--कार्य विवरण चुने--</option><option>नाली निर्माण</option><option>सड़क मरम्मत</option></select></div>
               <div className="field"><label>क्षेत्र</label><select className="select"><option value="">--क्षेत्र चुने--</option><option>ग्राम</option><option>शहर</option></select></div>
-              <div className="field"><label>शहर / वार्ड</label><select className="select"><option value="">--वार्ड चुने--</option><option>Ward 1</option><option>Ward 2</option></select></div>
+              <div className="field"><label>शहर</label><select className="select" value={filters.city} onChange={e=>{setFilters(f=>({...f,city:e.target.value})); setPage(1);}}><option value="">--शहर चुने--</option><option>बगीचा</option><option>दुलदुला</option><option>फरसाबहार</option><option>कांसाबेल</option><option>कोटबा</option><option>मनोरा</option><option>कुनकुरी</option><option>जशपुर नगर</option><option>पत्थलगांव</option></select></div>
+              <div className="field"><label>वार्ड</label><input className="input" type="text" placeholder="वार्ड का नाम लिखें" /></div>
               <div className="field full"><label>दिनांक के अनुसार खोज</label><input className="input" placeholder="dd-mm-yyyy" /></div>
             </div>
             <div className="actions">
@@ -196,7 +197,7 @@ const Table = ({
               <table>
                 <thead>
                   <tr>
-                    {['क्र.','इमेज','कार्य के प्रकार','स्वी. वर्ष','प्रा.प/वार्ड का नाम','कार्य का नाम','कार्य एजेंसी','योजना','कार्य विवरण','कार्य की भौतिक स्थिति','अंतिम संशोधन','कार्रवाई'].map((h,i)=> (
+                    {['क्र.','इमेज','कार्य के प्रकार','स्वी. वर्ष','ज. प./वि. ख. का नाम','ग्रा.प/वार्ड का नाम','कार्य का नाम','कार्य एजेंसी','योजना','कार्य विवरण','कार्य की भौतिक स्थिति','अंतिम संशोधन','कार्रवाई'].map((h,i)=> (
                       <th key={i} className={keyMap[i]? 'sortable':''} onClick={()=> keyMap[i] && toggleSort(i)}>{h}{keyMap[i] && <i className="fa-solid fa-sort sort" />}</th>
                     ))}
                   </tr>
@@ -208,6 +209,7 @@ const Table = ({
                       <td><div style={{width:58,height:38,border:'1px dashed #cfe2f0',borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center'}}>IMG</div></td>
                       <td>{r.type}</td>
                       <td>{r.year}</td>
+                      <td>{r.city}</td>
                       <td>{r.vname}</td>
                       <td>{r.name}</td>
                       <td>{r.agency}</td>
