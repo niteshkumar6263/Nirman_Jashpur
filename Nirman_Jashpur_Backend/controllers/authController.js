@@ -32,7 +32,7 @@ const register = async (req, res) => {
       role,
       department,
       designation,
-      phoneNumber,
+      contactNumber,
       address
     } = req.body;
 
@@ -57,7 +57,7 @@ const register = async (req, res) => {
       role,
       department,
       designation,
-      phoneNumber,
+      contactNumber,
       address,
       isActive: true
     });

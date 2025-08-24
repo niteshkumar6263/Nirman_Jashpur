@@ -10,6 +10,8 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const app = express();
 
+
+
 // Connect to database
 connectDB();
 
@@ -58,6 +60,7 @@ app.use(notFound);
 
 // Error handling middleware
 app.use(errorHandler);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
