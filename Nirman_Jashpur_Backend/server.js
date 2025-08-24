@@ -11,6 +11,8 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const app = express();
 
+
+
 // Connect to database
 connectDB();
 
@@ -53,6 +55,7 @@ app.use(notFound);
 
 // Error handling middleware
 app.use(errorHandler);
+
 
 app.listen(config.port, () => {
   console.log(`Server is running on port ${config.port}`);

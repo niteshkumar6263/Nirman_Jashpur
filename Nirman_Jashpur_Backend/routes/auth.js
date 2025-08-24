@@ -27,7 +27,7 @@ const registerValidation = [
     'Super Admin'
   ]).withMessage('Invalid role'),
   body('department').trim().notEmpty().withMessage('Department is required'),
-  body('designation').trim().notEmpty().withMessage('Designation is required')
+  body('designation').trim().notEmpty().withMessage('Designation is required'),
 ];
 
 const loginValidation = [
@@ -37,7 +37,7 @@ const loginValidation = [
 
 const updateProfileValidation = [
   body('fullName').optional().trim().notEmpty().withMessage('Full name cannot be empty'),
-  body('phoneNumber').optional().trim().notEmpty().withMessage('Phone number cannot be empty'),
+  body('contactNumber').optional().trim().notEmpty().withMessage('Phone number cannot be empty'),
   body('address').optional().trim().notEmpty().withMessage('Address cannot be empty')
 ];
 
