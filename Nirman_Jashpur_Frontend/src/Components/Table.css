@@ -7,9 +7,9 @@
 .user .ic { width:36px; height:36px; border-radius:50%; background:#16a34a; display:grid; place-items:center; color:#fff; }
 .user .logout { width:36px; height:36px; border-radius:50%; background:#e8edee; color:#050404; display:flex; align-items:center; justify-content:center; border:0; cursor:pointer; padding:0; }
 .user .logout i { line-height:1; font-size:16px; }
-.subbar { background:var(--section-blue); padding:10px 18px; display:flex; align-items:center; gap:10px; }
+.subbar { background:var(--section-blue); display:flex; align-items:center; gap:10px; }
 .subbar .dot { width:10px; height:10px; border-radius:50%; background:#fff; }
-.subbar h2 { margin:0; font-size:18px; }
+.subbar h2 { margin:0; font-size:15px; }
 .wrap { padding:18px; max-width:1340px; margin:0 auto; }
 .panel { background:var(--card); border-radius:12px; box-shadow:var(--shadow); }
 .panel .p-body { padding:16px; }
@@ -20,7 +20,7 @@
 .filters .full { grid-column:1/-1; }
 .field { display:flex; flex-direction:column; gap:6px; }
 .field label { font-size:13px; color:var(--ink-2); }
-.select, .input { appearance:none; padding:10px 12px; border-radius:8px; border:1px solid #e2e8f0; background:#fbfdff; outline:none; }
+.select, .input { appearance:none; padding:10px 12px; border-radius:8px; border:1px solid #e2e8f0; background:#fbfdff; outline:none; font-size:16px; color:#222; }
 .select:focus, .input:focus { border-color:#a3c3ff; box-shadow:0 0 0 3px rgba(59,130,246,.15); }
 .actions { display:flex; gap:8px; justify-content:flex-end; grid-column:1/-1; margin-top:4px; }
 .btn { padding:10px 14px; border:0; border-radius:10px; font-weight:700; cursor:pointer; transition:transform .08s ease; }
