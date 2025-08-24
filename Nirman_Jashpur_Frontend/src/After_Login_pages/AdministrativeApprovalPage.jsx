@@ -3,10 +3,10 @@ import Table from '../Components/Table.jsx';
 const AdministrativeApprovalPage = () => {
   return (
     <Table 
-  addButtonLabel="Add New Work"
+  addButtonLabel="प्रशासकीय स्वीकृति"
   onAddNew= "/add-work"
   showAddButton={false}
-  onView="/work"
+  onView="/Administrative-Approval-Form"
 />
   );
 };

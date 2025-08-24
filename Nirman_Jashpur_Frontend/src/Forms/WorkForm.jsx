@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './AddToWork.css';
+import './WorkForm.css';
 
 const STORAGE_KEY = 'tribal_work_data_v1';
 
@@ -126,6 +126,7 @@ export default function AddToWork({ onWorkAdded, prefilledData }){
       type: form.workType || 'कार्य प्रकार',
       year: form.workYear || new Date().getFullYear() + '-' + (new Date().getFullYear() + 1).toString().slice(-2),
       vname: form.ward || form.block || form.areaType || 'क्षेत्र',
+      city: form.city || '',
       name: form.workName || 'कार्य का नाम',
       agency: form.dept || 'कार्य एजेंसी', 
       plan: form.scheme || 'योजना',
@@ -185,9 +186,9 @@ export default function AddToWork({ onWorkAdded, prefilledData }){
           {/* Row 1 */}
           <div className="atw-grid">
             <div className="fld">
-              <label>निर्माण वर्ष <span className="req">*</span></label>
+              <label>वित्तीय वर्ष <span className="req">*</span></label>
               <select name="workYear" value={form.workYear} onChange={update}>
-                <option value="">-- निर्माण वर्ष चुने --</option>
+                <option value="">-- वित्तीय वर्ष चुने --</option>
                 <option>2024-25</option>
                 <option>2023-24</option>
               </select>
@@ -212,11 +213,11 @@ export default function AddToWork({ onWorkAdded, prefilledData }){
               {errors.subDept && <small className="err">{errors.subDept}</small>}
             </div>
             <div className="fld">
-              <label>केंद्रीय विभाग <span className="req">*</span></label>
+              <label>स्वीकृतकर्ता विभाग <span className="req">*</span></label>
               <select name="centralDept" value={form.centralDept} onChange={update}>
-                <option value="">-- केंद्रीय विभाग चुने --</option>
-                <option>केंद्रीय विभाग A</option>
-                <option>केंद्रीय विभाग B</option>
+                <option value="">-- स्वीकृतकर्ता विभाग चुने --</option>
+                <option>स्वीकृतकर्ता विभाग A</option>
+                <option>स्वीकृतकर्ता विभाग B</option>
               </select>
               {errors.centralDept && <small className="err">{errors.centralDept}</small>}
             </div>
@@ -246,8 +247,8 @@ export default function AddToWork({ onWorkAdded, prefilledData }){
               <button className="atw-file-btn" type="button" title="अपलोड">📄</button>
             </div>
             <div className="fld">
-              <label>रेखांश (Longitude)</label>
-              <input name="longitude" value={form.longitude} onChange={update} placeholder="रेखांश(Longitude)" type="number" step="any" />
+              <label>देशान्तर (Longitude)</label>
+              <input name="longitude" value={form.longitude} onChange={update} placeholder="देशान्तर(Longitude)" type="number" step="any" />
               {errors.longitude && <small className="err">{errors.longitude}</small>}
             </div>
             <div className="fld">
@@ -267,11 +268,18 @@ export default function AddToWork({ onWorkAdded, prefilledData }){
               </select>
             </div>
             <div className="fld">
-              <label>ब्लॉक / नगर</label>
-              <select name="block" value={form.block} onChange={update}>
-                <option value="">-- ब्लॉक चुने --</option>
-                <option>Bagicha</option>
-                <option>Jashpur</option>
+              <label>शहर / नगर</label>
+              <select name="city" value={form.city} onChange={update}>
+                <option value="">-- शहर चुने --</option>
+                <option>बगीचा</option>
+                <option>दुलदुला</option>
+                <option>फरसाबहार</option>
+                <option>कांसाबेल</option>
+                <option>कोटबा</option>
+                <option>मनोरा</option>
+                <option>कुनकुरी</option>
+                <option>जशपुर नगर</option>
+                <option>पत्थलगांव</option>
               </select>
             </div>
             <div className="fld">

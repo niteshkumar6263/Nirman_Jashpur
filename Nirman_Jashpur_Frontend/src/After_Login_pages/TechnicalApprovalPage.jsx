@@ -3,10 +3,10 @@ import Table from '../Components/Table.jsx';
 const TechnicalApprovalPage = () => {
   return (
     <Table 
-  addButtonLabel="Add New Work"
+  addButtonLabel="तकनीकी स्वीकृति"
   onAddNew= "/add-work"
   showAddButton={false}
-  onView="/work"
+  onView="/Technical-Approval-Form"
 />
   );
 };

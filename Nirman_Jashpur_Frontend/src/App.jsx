@@ -8,7 +8,8 @@ import {
   Routes,
   Route,
   useNavigate,
-  Navigate
+  Navigate,
+  useLocation
 } from 'react-router-dom';
 
 import './App.css';
@@ -19,7 +20,7 @@ import DownloadPage from './Before_Login_pages/DownloadPage.jsx';
 import DashboardPage from './After_Login_pages/DashboardPage.jsx';
 import GISPage from './After_Login_pages/GISPage.jsx';
 import WorkPage from './After_Login_pages/WorkPage.jsx';
-import AddWorkPage from './After_Login_pages/AddToWork.jsx';
+import WorkForm from './Forms/WorkForm.jsx';
 import TechnicalApprovalPage from './After_Login_pages/TechnicalApprovalPage.jsx';
 import AdministrativeApprovalPage from './After_Login_pages/AdministrativeApprovalPage.jsx';
 import TenderPage from './After_Login_pages/TenderPage.jsx';
@@ -27,6 +28,12 @@ import WorkOrderPage from './After_Login_pages/WorkOrderPage.jsx';
 import WorkProgressPage from './After_Login_pages/WorkProgressPage.jsx';
 import ReportsPage from './After_Login_pages/ReportsPage.jsx';
 import WorkDetailsPage from './After_Login_pages/WorkDetails.jsx';
+import AdministrativeApprovalForm from './Forms/AdministrativeApprovalForm.jsx';
+import TechnicalApprovalForm from './Forms/TechnicalApprovalForm.jsx';
+import TenderForm from './Forms/TenderForm.jsx';
+import WorkOrderForm from './Forms/WorkOrderForm.jsx';
+import WorkInProgressForm from './Forms/WorkInProgressForm.jsx';
+
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -67,14 +74,19 @@ const App = () => {
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/gis" element={<GISPage />} />
                 <Route path="/work" element={<WorkPage onLogout={() => setIsLoggedIn(false)} />} />
-                <Route path="/technical" element={<TechnicalApprovalPage onLogout={() => setIsLoggedIn(false)} />} />
-                <Route path="/admin" element={<AdministrativeApprovalPage />} />
-                <Route path="/tender" element={<TenderPage />} />
-                <Route path="/order" element={<WorkOrderPage />} />
-                <Route path="/progress" element={<WorkProgressPage />} />
-                <Route path="/report" element={<ReportsPage />} />
-                 <Route path="/add-work" element={<AddWorkPage />} />
-                 <Route path="/work/:id" element={<WorkDetailsPage />} />
+                <Route path="/Technical-Approval" element={<TechnicalApprovalPage onLogout={() => setIsLoggedIn(false)} />} />
+                <Route path="/Administrative-Approval" element={<AdministrativeApprovalPage />} />
+                <Route path="/Tender" element={<TenderPage />} />
+                <Route path="/Work-Order" element={<WorkOrderPage />} />
+                <Route path="/Work-In-Progress" element={<WorkProgressPage />} />
+                <Route path="/Report" element={<ReportsPage />} />
+                 <Route path="/add-work" element={<WorkForm />} />
+                 <Route path="/work/:workId" element={<WorkDetailsPage />} />
+                 <Route path="/Administrative-Approval-Form/:workId" element={<AdministrativeApprovalForm />} />
+                 <Route path="/Technical-Approval-Form/:workId" element={<TechnicalApprovalForm />} />
+                 <Route path="/Tender-Form/:workId" element={<TenderForm />} /> 
+                 <Route path="/Work-Order-Form/:workId" element={<WorkOrderForm/>} /> 
+                 <Route path="/Work-In-Progress-Form/:workId" element={<WorkInProgressForm/>} /> 
               </>
             )}
           </Routes>
@@ -86,18 +98,24 @@ const App = () => {
 
 const TopNavbar = ({ setIsLoggedIn }) => {
   const navigate = useNavigate();
-  const NavLink = ({ to, label, icon }) => (
-    <button
-      onClick={() => navigate(to)}
-      className="nav-link"
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
-  );
+  const location = useLocation();
+
+  const NavLink = ({ to, label, icon }) => {
+    const isActive = location.pathname === to;
+
+    return (
+      <button
+        onClick={() => navigate(to)}
+        className={`nav-link ${isActive ? "active" : ""}`}
+      >
+        {icon}
+        <span>{label}</span>
+      </button>
+    );
+  };
 
   return (
-    <header className="header">
+    <header className="app-header">
       <div className="container">
         <div className="logo-group">
           <div className="logo-text">
@@ -107,8 +125,8 @@ const TopNavbar = ({ setIsLoggedIn }) => {
           <span className="jashpur-text">Jashpur</span>
         </div>
 
-        <nav className="nav-desktop">
-          <NavLink to="/" label="मुखपृष्ठ" icon={<Home />} />
+        <nav className="nav-desktop ">
+          <NavLink  to="/" label="मुखपृष्ठ" icon={<Home />} />
           <NavLink to="/login" label="विभागीय लॉगिन" icon={<LogIn />} />
           <NavLink to="/download" label="ऐप डाउनलोड करे" icon={<Download />} />
         </nav>
@@ -123,12 +141,12 @@ const SideNavbar = ({ onLogout }) => {
     { to: '/dashboard', label: 'डैशबोर्ड', icon: <Home /> },
     { to: '/work', label: 'कार्य', icon: <ClipboardList /> },
     { to: '/gis', label: 'GIS Fencing (Map)', icon: <Map /> },
-    { to: '/technical', label: 'तकनीकी स्वीकृति', icon: <FileText /> },
-    { to: '/admin', label: 'प्रशासकीय स्वीकृति', icon: <FileText /> },
-    { to: '/tender', label: 'निविदा', icon: <FileText /> },
-    { to: '/order', label: 'कार्य आदेश', icon: <ClipboardList /> },
-    { to: '/progress', label: 'कार्य प्रगति', icon: <BarChart /> },
-    { to: '/report', label: 'रिपोर्ट', icon: <FileText /> }
+    { to: '/Technical-Approval', label: 'तकनीकी स्वीकृति', icon: <FileText /> },
+    { to: '/Administrative-Approval', label: 'प्रशासकीय स्वीकृति', icon: <FileText /> },
+    { to: '/Tender', label: 'निविदा', icon: <FileText /> },
+    { to: '/Work-Order', label: 'कार्य आदेश', icon: <ClipboardList /> },
+    { to: '/Work-In-Progress', label: 'कार्य प्रगति', icon: <BarChart /> },
+    { to: '/Report', label: 'रिपोर्ट', icon: <FileText /> }
   ];
   return (
     <aside className="sidebar">

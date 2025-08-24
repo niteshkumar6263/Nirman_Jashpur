@@ -195,7 +195,7 @@ const getProfile = async (req, res) => {
           role: user.role,
           department: user.department,
           designation: user.designation,
-          phoneNumber: user.phoneNumber,
+          contactNumber: user.contactNumber,
           address: user.address,
           permissions: user.permissions,
           lastLogin: user.lastLogin,
@@ -227,7 +227,7 @@ const updateProfile = async (req, res) => {
       });
     }
 
-    const allowedUpdates = ['fullName', 'phoneNumber', 'address'];
+    const allowedUpdates = ['fullName', 'contactNumber', 'address'];
     const updates = {};
 
     allowedUpdates.forEach(field => {
@@ -261,7 +261,7 @@ const updateProfile = async (req, res) => {
           role: user.role,
           department: user.department,
           designation: user.designation,
-          phoneNumber: user.phoneNumber,
+          contactNumber: user.contactNumber,
           address: user.address
         }
       }

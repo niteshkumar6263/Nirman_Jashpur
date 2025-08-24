@@ -3,10 +3,10 @@ import Table from '../Components/Table.jsx';
 const WorkOrderPage = () => {
   return (
     <Table 
-  addButtonLabel="Add New Work"
+  addButtonLabel="कार्य आदेश"
   onAddNew= "/add-work"
   showAddButton={false}
-  onView="/work"
+  onView="/Work-Order-Form"
 />
   );
 };

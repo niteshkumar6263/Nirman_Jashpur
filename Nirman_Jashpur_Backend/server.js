@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./utils/database');
+const config = require('./config/config');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 const app = express();
@@ -17,16 +18,10 @@ connectDB();
 
 // Security middleware
 app.use(helmet());
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true
-}));
+app.use(cors(config.cors));
 
 // Rate limiting
-const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 900000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100
-});
+const limiter = rateLimit(config.rateLimit);
 app.use(limiter);
 
 // Middleware
@@ -62,9 +57,8 @@ app.use(notFound);
 app.use(errorHandler);
 
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(config.port, () => {
+  console.log(`Server is running on port ${config.port}`);
 });
 
 module.exports = app;
