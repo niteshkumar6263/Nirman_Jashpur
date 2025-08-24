@@ -23,7 +23,7 @@
 }
 .work-ref { font-family:'Noto Sans Devanagari', system-ui, Segoe UI, Arial, sans-serif; }
 .header { position:sticky; top:0; z-index:10; background:linear-gradient(90deg,var(--deep-blue),var(--deep-blue-2)); color:#fff; border-radius: 16px 16px 16px 16px; overflow: hidden; }
-.top { display:flex; justify-content:space-between; align-items:center; padding:12px 18px; }
+.table-top { display:flex; justify-content:space-between; align-items:center; padding:12px 18px; }
 .crumbs { font-size:12px; opacity:.9; }
 .title h1 { margin:0; font-size:20px; }
 .user { display:flex; align-items:center; gap:10px; }

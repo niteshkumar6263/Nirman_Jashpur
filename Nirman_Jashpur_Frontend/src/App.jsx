@@ -137,6 +137,8 @@ const TopNavbar = ({ setIsLoggedIn }) => {
 
 const SideNavbar = ({ onLogout }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
   const items = [
     { to: '/dashboard', label: 'डैशबोर्ड', icon: <Home /> },
     { to: '/work', label: 'कार्य', icon: <ClipboardList /> },
@@ -148,10 +150,13 @@ const SideNavbar = ({ onLogout }) => {
     { to: '/Work-In-Progress', label: 'कार्य प्रगति', icon: <BarChart /> },
     { to: '/Report', label: 'रिपोर्ट', icon: <FileText /> }
   ];
+
   return (
     <aside className="sidebar">
       <div className="s-logo">
-        <div className="badge"><i className="fa-solid fa-certificate" style={{ color:'#fff' }}></i></div>
+        <div className="badge">
+          <i className="fa-solid fa-certificate" style={{ color: '#fff' }}></i>
+        </div>
         <div className="hide-sm">
           <div className="s-name">Jashpur — निर्माण</div>
           <div className="s-sub">आदिवासी विकास विभाग</div>
@@ -159,12 +164,16 @@ const SideNavbar = ({ onLogout }) => {
       </div>
       <nav className="menu" aria-label="मुख्य नेविगेशन">
         {items.map(it => (
-          <button key={it.to} onClick={() => navigate(it.to)}>
+          <button
+            key={it.to}
+            onClick={() => navigate(it.to)}
+            className={location.pathname === it.to ? 'active' : ''}
+          >
             {it.icon}<span>{it.label}</span>
           </button>
         ))}
         <button className="logout-btn" onClick={onLogout}>
-          <i className="fa-solid fa-power-off" style={{width:26,textAlign:'center'}}></i>
+          <i className="fa-solid fa-power-off" style={{ width: 26, textAlign: 'center' }}></i>
           <span>लॉगआउट</span>
         </button>
       </nav>

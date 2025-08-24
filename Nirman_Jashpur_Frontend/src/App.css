@@ -70,6 +70,15 @@ main {
   align-items: center;
   gap: 8px;
 }
+.menu button.active {
+  background: var(--nav-hover);
+  box-shadow: inset 4px 0 0 var(--nav-border);
+}
+
+.menu button.active span {
+  color: #fff;
+}
+
 .logo-text {
   display: flex;
   flex-direction: column;

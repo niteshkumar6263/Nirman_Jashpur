@@ -145,7 +145,7 @@ const Table = ({
   return (
     <div className="work-ref">
       <div className="header">
-        <div className="top">
+        <div className="table-top">
           <div>
             <div className="crumbs" id="crumbs">{meta.crumbs}</div>
             <div className="title"><h1 id="pageTitle">{meta.title}</h1></div>
