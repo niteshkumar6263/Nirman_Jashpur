@@ -145,7 +145,7 @@ const Table = ({
   return (
     <div className="work-ref">
       <div className="header">
-        <div className="top">
+        <div className="table-top">
           <div>
             <div className="crumbs" id="crumbs">{meta.crumbs}</div>
             <div className="title"><h1 id="pageTitle">{meta.title}</h1></div>
@@ -206,7 +206,7 @@ const Table = ({
               <table>
                 <thead>
                   <tr>
-                    {['क्र.','इमेज','कार्य के प्रकार','स्वी. वर्ष','ज. प./वि. ख. का नाम','ग्रा.प/वार्ड का नाम','कार्य का नाम','कार्य एजेंसी','योजना','कार्य विवरण','कार्य की भौतिक स्थिति','अंतिम संशोधन','कार्रवाई'].map((h,i)=> (
+                    {['क्र.','इमेज','कार्य के प्रकार','स्वी. वर्ष','ज. प./वि. ख. का नाम','ग्रा.प/वार्ड का नाम','कार्य का नाम','कार्य एजेंसी','योजना | राशि (₹)','कार्य विवरण','कार्य की भौतिक स्थिति','अंतिम संशोधन','कार्रवाई'].map((h,i)=> (
                       <th key={i} className={keyMap[i]? 'sortable':''} onClick={()=> keyMap[i] && toggleSort(i)}>{h}{keyMap[i] && <i className="fa-solid fa-sort sort" />}</th>
                     ))}
                   </tr>
@@ -222,9 +222,18 @@ const Table = ({
                       <td>{r.vname}</td>
                       <td>{r.name}</td>
                       <td>{r.agency}</td>
-                      <td>{r.plan}</td>
-                      <td>{r.amount}</td>
+                      <td>
+                        <div className="plan-multiline">
+                          <div className="plan-name">
+                            {r.plan.split(' ').map((word, idx) => (
+                              <div key={idx}>{word}</div>
+                            ))}
+                          </div>
+                          <div className="plan-amount">{r.amount}</div>
+                        </div>
+                      </td>
                       <td>{r.status}</td>
+                      <td>-</td>
                       <td>{r.modified}</td>
                       <td>
                         <div className="row-actions">

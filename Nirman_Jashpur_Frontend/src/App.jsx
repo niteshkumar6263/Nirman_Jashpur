@@ -38,8 +38,13 @@ import TechnicalApprovalForm from "./Forms/TechnicalApprovalForm.jsx";
 import TenderForm from "./Forms/TenderForm.jsx";
 import WorkOrderForm from "./Forms/WorkOrderForm.jsx";
 import WorkInProgressForm from "./Forms/WorkInProgressForm.jsx";
+<<<<<<< HEAD
 import ReportSub3 from "./After_Login_pages/ReportSub3.jsx";
 import ReportSub4 from "./After_Login_pages/ReportSub4.jsx";
+=======
+import Yearly from "./After_Login_pages/Yearly.jsx";
+import AgencyReport from "./After_Login_pages/AgencyReport.jsx";
+>>>>>>> 4e42daded5fe8e5533c59676076dd19828eeaa8f
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -97,6 +102,7 @@ const App = () => {
                   path="/Work-In-Progress"
                   element={<WorkProgressPage />}
                 />
+<<<<<<< HEAD
                 {/*Report Routes*/}
                 <Route path="/Report" element={<ReportsPage />} />
                 <Route path="/Report/ReportSub3" element={<ReportSub3 />}/>
@@ -107,6 +113,11 @@ const App = () => {
                 <Route path="/Report/ReportSub1" element={<ReportSub1 />}/> */}
                 <Route path="/Report/ReportSub3" element={<ReportSub3 />}/>
 
+=======
+                <Route path="/Report" element={<ReportsPage />} />
+                <Route path="/Yearly" element={<Yearly />} />
+                <Route path="/agency-report" element={<AgencyReport />} />
+>>>>>>> 4e42daded5fe8e5533c59676076dd19828eeaa8f
                 <Route path="/add-work" element={<WorkForm />} />
                 <Route path="/work/:workId" element={<WorkDetailsPage />} />
                 <Route
@@ -201,6 +212,7 @@ const SideNavbar = ({ onLogout }) => {
     { to: "/Tender", label: "निविदा", icon: <FileText /> },
     { to: "/Work-Order", label: "कार्य आदेश", icon: <ClipboardList /> },
     { to: "/Work-In-Progress", label: "कार्य प्रगति", icon: <BarChart /> },
+<<<<<<< HEAD
     {
       to: "/Report",
       label: "रिपोर्ट",
@@ -212,6 +224,17 @@ const SideNavbar = ({ onLogout }) => {
         { to: "/Report/ReportSub4", label: "एजेंसीवार दस्तावेज़ों की संख्या रिपोर्ट" },
       ],
     },
+=======
+   {
+    label: "रिपोर्ट",
+    icon: <FileText />,
+    children: [
+      { to: "/Yearly", label: "वार्षिक रिपोर्ट" },
+      { to: "/agency-report", label: "कार्य एजेंसीवार रिपोर्ट" },
+    ],
+  },
+
+>>>>>>> 4e42daded5fe8e5533c59676076dd19828eeaa8f
   ];
 
   return (
