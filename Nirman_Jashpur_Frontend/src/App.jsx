@@ -1,38 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
-  Home, LogIn, Download, Map, FileText,
-  ClipboardList, BarChart
-} from 'lucide-react';
+  Home,
+  LogIn,
+  Download,
+  Map,
+  FileText,
+  ClipboardList,
+  BarChart,
+} from "lucide-react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   useNavigate,
   Navigate,
-  useLocation
-} from 'react-router-dom';
+  useLocation,
+} from "react-router-dom";
 
-import './App.css';
+import "./App.css";
 
-import LoginPage from './Before_Login_pages/Login.jsx';
-import HomePage from './Before_Login_pages/HomePage.jsx';
-import DownloadPage from './Before_Login_pages/DownloadPage.jsx';
-import DashboardPage from './After_Login_pages/DashboardPage.jsx';
-import GISPage from './After_Login_pages/GISPage.jsx';
-import WorkPage from './After_Login_pages/WorkPage.jsx';
-import WorkForm from './Forms/WorkForm.jsx';
-import TechnicalApprovalPage from './After_Login_pages/TechnicalApprovalPage.jsx';
-import AdministrativeApprovalPage from './After_Login_pages/AdministrativeApprovalPage.jsx';
-import TenderPage from './After_Login_pages/TenderPage.jsx';
-import WorkOrderPage from './After_Login_pages/WorkOrderPage.jsx';
-import WorkProgressPage from './After_Login_pages/WorkProgressPage.jsx';
-import ReportsPage from './After_Login_pages/ReportsPage.jsx';
-import WorkDetailsPage from './After_Login_pages/WorkDetails.jsx';
-import AdministrativeApprovalForm from './Forms/AdministrativeApprovalForm.jsx';
-import TechnicalApprovalForm from './Forms/TechnicalApprovalForm.jsx';
-import TenderForm from './Forms/TenderForm.jsx';
-import WorkOrderForm from './Forms/WorkOrderForm.jsx';
-import WorkInProgressForm from './Forms/WorkInProgressForm.jsx';
+import LoginPage from "./Before_Login_pages/Login.jsx";
+import HomePage from "./Before_Login_pages/HomePage.jsx";
+import DownloadPage from "./Before_Login_pages/DownloadPage.jsx";
+import DashboardPage from "./After_Login_pages/DashboardPage.jsx";
+import GISPage from "./After_Login_pages/GISPage.jsx";
+import WorkPage from "./After_Login_pages/WorkPage.jsx";
+import WorkForm from "./Forms/WorkForm.jsx";
+import TechnicalApprovalPage from "./After_Login_pages/TechnicalApprovalPage.jsx";
+import AdministrativeApprovalPage from "./After_Login_pages/AdministrativeApprovalPage.jsx";
+import TenderPage from "./After_Login_pages/TenderPage.jsx";
+import WorkOrderPage from "./After_Login_pages/WorkOrderPage.jsx";
+import WorkProgressPage from "./After_Login_pages/WorkProgressPage.jsx";
+import ReportsPage from "./After_Login_pages/ReportsPage.jsx";
+import WorkDetailsPage from "./After_Login_pages/WorkDetails.jsx";
+import AdministrativeApprovalForm from "./Forms/AdministrativeApprovalForm.jsx";
+import TechnicalApprovalForm from "./Forms/TechnicalApprovalForm.jsx";
+import TenderForm from "./Forms/TenderForm.jsx";
+import WorkOrderForm from "./Forms/WorkOrderForm.jsx";
+import WorkInProgressForm from "./Forms/WorkInProgressForm.jsx";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -52,7 +57,7 @@ const App = () => {
           />
         )}
 
-        <main className={isLoggedIn ? 'logged-in-main' : ''}>
+        <main className={isLoggedIn ? "logged-in-main" : ""}>
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<HomePage />} />
@@ -61,9 +66,11 @@ const App = () => {
             <Route
               path="/login"
               element={
-                isLoggedIn
-                  ? <Navigate to="/dashboard" replace />
-                  : <LoginPage onLoginSuccess={() => setIsLoggedIn(true)} />
+                isLoggedIn ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <LoginPage onLoginSuccess={() => setIsLoggedIn(true)} />
+                )
               }
             />
             <Route path="/download" element={<DownloadPage />} />
@@ -73,20 +80,41 @@ const App = () => {
               <>
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/gis" element={<GISPage />} />
-                <Route path="/work" element={<WorkPage  />} />
-                <Route path="/Technical-Approval" element={<TechnicalApprovalPage  />} />
-                <Route path="/Administrative-Approval" element={<AdministrativeApprovalPage />} />
+                <Route path="/work" element={<WorkPage />} />
+                <Route
+                  path="/Technical-Approval"
+                  element={<TechnicalApprovalPage />}
+                />
+                <Route
+                  path="/Administrative-Approval"
+                  element={<AdministrativeApprovalPage />}
+                />
                 <Route path="/Tender" element={<TenderPage />} />
                 <Route path="/Work-Order" element={<WorkOrderPage />} />
-                <Route path="/Work-In-Progress" element={<WorkProgressPage />} />
+                <Route
+                  path="/Work-In-Progress"
+                  element={<WorkProgressPage />}
+                />
                 <Route path="/Report" element={<ReportsPage />} />
-                 <Route path="/add-work" element={<WorkForm />} />
-                 <Route path="/work/:workId" element={<WorkDetailsPage />} />
-                 <Route path="/Administrative-Approval-Form/:workId" element={<AdministrativeApprovalForm />} />
-                 <Route path="/Technical-Approval-Form/:workId" element={<TechnicalApprovalForm />} />
-                 <Route path="/Tender-Form/:workId" element={<TenderForm />} /> 
-                 <Route path="/Work-Order-Form/:workId" element={<WorkOrderForm/>} /> 
-                 <Route path="/Work-In-Progress-Form/:workId" element={<WorkInProgressForm/>} /> 
+                <Route path="/add-work" element={<WorkForm />} />
+                <Route path="/work/:workId" element={<WorkDetailsPage />} />
+                <Route
+                  path="/Administrative-Approval-Form/:workId"
+                  element={<AdministrativeApprovalForm />}
+                />
+                <Route
+                  path="/Technical-Approval-Form/:workId"
+                  element={<TechnicalApprovalForm />}
+                />
+                <Route path="/Tender-Form/:workId" element={<TenderForm />} />
+                <Route
+                  path="/Work-Order-Form/:workId"
+                  element={<WorkOrderForm />}
+                />
+                <Route
+                  path="/Work-In-Progress-Form/:workId"
+                  element={<WorkInProgressForm />}
+                />
               </>
             )}
           </Routes>
@@ -126,7 +154,7 @@ const TopNavbar = ({ setIsLoggedIn }) => {
         </div>
 
         <nav className="nav-desktop ">
-          <NavLink  to="/" label="मुखपृष्ठ" icon={<Home />} />
+          <NavLink to="/" label="मुखपृष्ठ" icon={<Home />} />
           <NavLink to="/login" label="विभागीय लॉगिन" icon={<LogIn />} />
           <NavLink to="/download" label="ऐप डाउनलोड करे" icon={<Download />} />
         </nav>
@@ -138,24 +166,38 @@ const TopNavbar = ({ setIsLoggedIn }) => {
 const SideNavbar = ({ onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [openMenu, setOpenMenu] = useState(null);
 
   const items = [
-    { to: '/dashboard', label: 'डैशबोर्ड', icon: <Home /> },
-    { to: '/work', label: 'कार्य', icon: <ClipboardList /> },
-    { to: '/gis', label: 'GIS Fencing (Map)', icon: <Map /> },
-    { to: '/Technical-Approval', label: 'तकनीकी स्वीकृति', icon: <FileText /> },
-    { to: '/Administrative-Approval', label: 'प्रशासकीय स्वीकृति', icon: <FileText /> },
-    { to: '/Tender', label: 'निविदा', icon: <FileText /> },
-    { to: '/Work-Order', label: 'कार्य आदेश', icon: <ClipboardList /> },
-    { to: '/Work-In-Progress', label: 'कार्य प्रगति', icon: <BarChart /> },
-    { to: '/Report', label: 'रिपोर्ट', icon: <FileText /> }
+    { to: "/dashboard", label: "डैशबोर्ड", icon: <Home /> },
+    { to: "/work", label: "कार्य", icon: <ClipboardList /> },
+    {
+      label: "GIS Fencing (Map)",
+      icon: <Map />,
+      children: [
+        { to: "/gis/category", label: "GIS Category" },
+        { to: "/gis/type", label: "GIS Work Type" },
+        { to: "/gis/list", label: "GIS Work List" },
+        { to: "/gis/map", label: "Map" },
+      ],
+    },
+    { to: "/Technical-Approval", label: "तकनीकी स्वीकृति", icon: <FileText /> },
+    {
+      to: "/Administrative-Approval",
+      label: "प्रशासकीय स्वीकृति",
+      icon: <FileText />,
+    },
+    { to: "/Tender", label: "निविदा", icon: <FileText /> },
+    { to: "/Work-Order", label: "कार्य आदेश", icon: <ClipboardList /> },
+    { to: "/Work-In-Progress", label: "कार्य प्रगति", icon: <BarChart /> },
+    { to: "/Report", label: "रिपोर्ट", icon: <FileText /> },
   ];
 
   return (
     <aside className="sidebar">
       <div className="s-logo">
         <div className="badge">
-          <i className="fa-solid fa-certificate" style={{ color: '#fff' }}></i>
+          <i className="fa-solid fa-certificate" style={{ color: "#fff" }}></i>
         </div>
         <div className="hide-sm">
           <div className="s-name">Jashpur — निर्माण</div>
@@ -163,21 +205,49 @@ const SideNavbar = ({ onLogout }) => {
         </div>
       </div>
       <nav className="menu" aria-label="मुख्य नेविगेशन">
-        {items.map(it => (
-          <button
-            key={it.to}
-            onClick={() => navigate(it.to)}
-            className={location.pathname === it.to ? 'active' : ''}
-          >
-            {it.icon}<span>{it.label}</span>
-          </button>
-        ))}
+        {items.map((it) =>
+          !it.children ? (
+            <button
+              key={it.to}
+              onClick={() => navigate(it.to)}
+              className={location.pathname === it.to ? "active" : ""}
+            >
+              {it.icon}
+              <span>{it.label}</span>
+            </button>
+          ) : (
+            <div>
+              <button
+                onClick={() =>
+                  setOpenMenu((prev) => (prev === it.label ? null : it.label))
+                }
+              >
+                {it.icon}
+                <span>{it.label}</span>
+              </button>
+              {openMenu == it.label && (
+                <div className="submenu">
+                  {it.children.map((child) => (
+                    <button key={child.to} onClick={() => navigate(child.to)}>
+                      <span>{child.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ),
+        )}
         <button className="logout-btn" onClick={onLogout}>
-          <i className="fa-solid fa-power-off" style={{ width: 26, textAlign: 'center' }}></i>
+          <i
+            className="fa-solid fa-power-off"
+            style={{ width: 26, textAlign: "center" }}
+          ></i>
           <span>लॉगआउट</span>
         </button>
       </nav>
-      <div className="tribal"><div className="art" /></div>
+      <div className="tribal">
+        <div className="art" />
+      </div>
     </aside>
   );
 };
