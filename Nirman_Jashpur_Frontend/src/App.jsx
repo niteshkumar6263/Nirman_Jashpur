@@ -37,6 +37,12 @@ import TechnicalApprovalForm from "./Forms/TechnicalApprovalForm.jsx";
 import TenderForm from "./Forms/TenderForm.jsx";
 import WorkOrderForm from "./Forms/WorkOrderForm.jsx";
 import WorkInProgressForm from "./Forms/WorkInProgressForm.jsx";
+
+// import ReportSub3 from "./After_Login_pages/ReportSub3.jsx";
+// import ReportSub4 from "./After_Login_pages/ReportSub4.jsx";
+
+import Yearly from "./After_Login_pages/Yearly.jsx";
+import AgencyReport from "./After_Login_pages/AgencyReport.jsx";
 import GISCategory from "./After_Login_pages/GIS/Category.jsx";
 import GISType from "./After_Login_pages/GIS/Type.jsx";
 import GISWorkList from "./After_Login_pages/GIS/WorkList.jsx";
@@ -96,7 +102,19 @@ const App = () => {
                   path="/Work-In-Progress"
                   element={<WorkProgressPage />}
                 />
+//                 {/*Report Routes*/}
+//                 <Route path="/Report" element={<ReportsPage />} />
+//                 <Route path="/Report/ReportSub3" element={<ReportSub3 />}/>
+//                 <Route path="/Report/ReportSub4" element={<ReportSub4 />}/>
+//                 {/* 
+//                 Done by shaurya:-
+//                 <Route path="/Report/Reportsub2" element={<ReportSub2 />}/>
+//                 <Route path="/Report/ReportSub1" element={<ReportSub1 />}/> */}
+//                 <Route path="/Report/ReportSub3" element={<ReportSub3 />}/>
+
                 <Route path="/Report" element={<ReportsPage />} />
+                <Route path="/Yearly" element={<Yearly />} />
+                <Route path="/agency-report" element={<AgencyReport />} />
                 <Route path="/add-work" element={<WorkForm />} />
                 <Route path="/work/:workId" element={<WorkDetailsPage />} />
                 <Route
@@ -194,7 +212,25 @@ const SideNavbar = ({ onLogout }) => {
     { to: "/Tender", label: "निविदा", icon: <FileText /> },
     { to: "/Work-Order", label: "कार्य आदेश", icon: <ClipboardList /> },
     { to: "/Work-In-Progress", label: "कार्य प्रगति", icon: <BarChart /> },
-    { to: "/Report", label: "रिपोर्ट", icon: <FileText /> },
+//     {
+//       to: "/Report",
+//       label: "रिपोर्ट",
+//       icon: <FileText />,
+//       children: [
+//         { to: "/Report/sub1", label: "वित्तीय वर्ष" },
+//         { to: "/Report/sub2", label: "कार्य एजेंसीवार रिपोर्ट" },
+//         { to: "/Report/ReportSub3", label: "स्वीकृतकर्ता एजेंसीवार रिपोर्ट" },
+//         { to: "/Report/ReportSub4", label: "एजेंसीवार दस्तावेज़ों की संख्या रिपोर्ट" },
+//       ],
+//     },
+   {
+    label: "रिपोर्ट",
+    icon: <FileText />,
+    children: [
+      { to: "/Yearly", label: "वार्षिक रिपोर्ट" },
+      { to: "/agency-report", label: "कार्य एजेंसीवार रिपोर्ट" },
+    ],
+  },
   ];
 
   return (
