@@ -71,3 +71,46 @@ tbody tr:hover { background:#eaf5ff; }
   thead th { font-size:12px; }
   table { font-size:12px; }
 }
+
+/* Header bar styling */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #083a7a, #0d2f57);
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+/* Title */
+.header-bar h1 {
+  font-size: 18px;
+  margin: 0;
+  color: #fff;
+}
+
+/* Buttons container */
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Buttons */
+.btn {
+  background: #f5f5f5;
+  color: #000;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn:hover {
+  background: #ddd;
+}

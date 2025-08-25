@@ -21,23 +21,18 @@ const TableR4 = () => {
 
   return (
     <div className="work-ref">
-      <div className="header">
-        <div className="table-top">
-          <div>
-            <div className="title">
-              <h1 id="pageTitle">एजेंसीवार दस्तावेजों की संख्या सूची</h1>
-            </div>
-          </div>
-          <div className="actions">
-            <button className="btn orange" type="button">
-              <i className="fa-solid fa-file-excel" /> Excel Export
-            </button>
-            <button className="btn orange" type="button">
-              <i className="fa-solid fa-download" /> Download
-            </button>
-          </div>
-        </div>
-      </div>
+  <div className="header-bar">
+    <h1 id="pageTitle">एजेंसीवार दस्तावेजों की संख्या सूची</h1>
+    <div className="actions">
+      <button className="btn" type="button">
+        <i className="fa-solid fa-file-excel" /> Excel Export
+      </button>
+      <button className="btn" type="button">
+        <i className="fa-solid fa-download" /> Download
+      </button>
+    </div>
+  </div>
+
 
       <div className="wrap">
         <section className="panel table-card">
