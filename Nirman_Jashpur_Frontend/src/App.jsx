@@ -38,6 +38,7 @@ import TenderForm from "./Forms/TenderForm.jsx";
 import WorkOrderForm from "./Forms/WorkOrderForm.jsx";
 import WorkInProgressForm from "./Forms/WorkInProgressForm.jsx";
 import GISCategory from "./After_Login_pages/GIS/Category.jsx";
+import GISType from "./After_Login_pages/GIS/Type.jsx";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -115,6 +116,7 @@ const App = () => {
                   element={<WorkInProgressForm />}
                 />
                 <Route path="/gis/category" element={<GISCategory />} />
+                <Route path="/gis/type" element={<GISType />} />
               </>
             )}
           </Routes>
