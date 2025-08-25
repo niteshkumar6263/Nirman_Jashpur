@@ -38,6 +38,8 @@ import TechnicalApprovalForm from "./Forms/TechnicalApprovalForm.jsx";
 import TenderForm from "./Forms/TenderForm.jsx";
 import WorkOrderForm from "./Forms/WorkOrderForm.jsx";
 import WorkInProgressForm from "./Forms/WorkInProgressForm.jsx";
+import Yearly from "./After_Login_pages/Yearly.jsx";
+import AgencyReport from "./After_Login_pages/AgencyReport.jsx";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -96,6 +98,8 @@ const App = () => {
                   element={<WorkProgressPage />}
                 />
                 <Route path="/Report" element={<ReportsPage />} />
+                <Route path="/Yearly" element={<Yearly />} />
+                <Route path="/agency-report" element={<AgencyReport />} />
                 <Route path="/add-work" element={<WorkForm />} />
                 <Route path="/work/:workId" element={<WorkDetailsPage />} />
                 <Route
@@ -190,7 +194,15 @@ const SideNavbar = ({ onLogout }) => {
     { to: "/Tender", label: "निविदा", icon: <FileText /> },
     { to: "/Work-Order", label: "कार्य आदेश", icon: <ClipboardList /> },
     { to: "/Work-In-Progress", label: "कार्य प्रगति", icon: <BarChart /> },
-    { to: "/Report", label: "रिपोर्ट", icon: <FileText /> },
+   {
+    label: "रिपोर्ट",
+    icon: <FileText />,
+    children: [
+      { to: "/Yearly", label: "वार्षिक रिपोर्ट" },
+      { to: "/agency-report", label: "कार्य एजेंसीवार रिपोर्ट" },
+    ],
+  },
+
   ];
 
   return (
