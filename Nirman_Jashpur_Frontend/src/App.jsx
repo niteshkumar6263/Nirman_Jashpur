@@ -38,6 +38,7 @@ import TenderForm from "./Forms/TenderForm.jsx";
 import WorkOrderForm from "./Forms/WorkOrderForm.jsx";
 import WorkInProgressForm from "./Forms/WorkInProgressForm.jsx";
 import GISCategory from "./After_Login_pages/GIS/Category.jsx";
+import GISType from "./After_Login_pages/GIS/Type.jsx";
 import GISWorkList from "./After_Login_pages/GIS/WorkList.jsx";
 
 const App = () => {
@@ -116,6 +117,7 @@ const App = () => {
                   element={<WorkInProgressForm />}
                 />
                 <Route path="/gis/category" element={<GISCategory />} />
+                <Route path="/gis/type" element={<GISType />} />
                 <Route path="/gis/work-list" element={<GISWorkList />} />
               </>
             )}
@@ -206,7 +208,10 @@ const SideNavbar = ({ onLogout }) => {
           <div className="s-sub">आदिवासी विकास विभाग</div>
         </div>
       </div>
-      <nav className="menu" aria-label="मुख्य नेविगेशन">
+      <nav
+        className="menu scrollbar-thin scrollbar-thumb-gray-500 scrollbar-track-transparent hover:scrollbar-thumb-gray-700"
+        aria-label="मुख्य नेविगेशन"
+      >
         {items.map((it) =>
           !it.children ? (
             <button
@@ -227,15 +232,23 @@ const SideNavbar = ({ onLogout }) => {
                 {it.icon}
                 <span>{it.label}</span>
               </button>
-              {openMenu == it.label && (
-                <div className="submenu">
-                  {it.children.map((child) => (
-                    <button key={child.to} onClick={() => navigate(child.to)}>
-                      <span>{child.label}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+              <div
+                className={`ml-10 overflow-hidden transition-all duration-300 ease-in-out ${
+                  openMenu === it.label
+                    ? "max-h-40 opacity-100"
+                    : "max-h-0 opacity-0"
+                }`}
+              >
+                {it.children.map((child) => (
+                  <button
+                    className="w-full"
+                    key={child.to}
+                    onClick={() => navigate(child.to)}
+                  >
+                    <span>{child.label}</span>
+                  </button>
+                ))}
+              </div>
             </div>
           ),
         )}
