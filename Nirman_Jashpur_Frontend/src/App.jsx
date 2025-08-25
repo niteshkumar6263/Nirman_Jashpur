@@ -223,8 +223,9 @@ const SideNavbar = ({ onLogout }) => {
               <span>{it.label}</span>
             </button>
           ) : (
-            <div>
+            <div className="w-full" key={it.label}>
               <button
+                className={`w-full`}
                 onClick={() =>
                   setOpenMenu((prev) => (prev === it.label ? null : it.label))
                 }
