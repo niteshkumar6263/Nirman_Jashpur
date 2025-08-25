@@ -151,7 +151,15 @@ const Table = ({
             <div className="title"><h1 id="pageTitle">{meta.title}</h1></div>
           </div>
           <div className="user">
-            <div className="ic" tabIndex={0} aria-label="User profile"><i className="fa-solid fa-user" /></div>
+            <button
+              className="ic"
+              tabIndex={0}
+              aria-label="User profile"
+              type="button"
+              onClick={() => navigate('/profile')}
+            >
+              <i className="fa-solid fa-user" />
+            </button>
             <button className="logout" aria-label="Logout" type="button" onClick={onLogout || (() => {
               if (window.confirm('क्या आप लॉगआउट करना चाहते हैं?')) {
                 window.location.href = '/';
@@ -263,6 +271,10 @@ const Table = ({
           </div>
         </section>
       </div>
+      <footer>
+          <span>Copyright © 2025 निर्माण</span>
+          <span>Version 1.0</span>
+        </footer>
   <div className={"toast" + (toast? ' show':'')}>{toast||'\u00a0'}</div>
     </div>
   );

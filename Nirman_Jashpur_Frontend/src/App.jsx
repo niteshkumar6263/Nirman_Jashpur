@@ -38,6 +38,7 @@ import TechnicalApprovalForm from "./Forms/TechnicalApprovalForm.jsx";
 import TenderForm from "./Forms/TenderForm.jsx";
 import WorkOrderForm from "./Forms/WorkOrderForm.jsx";
 import WorkInProgressForm from "./Forms/WorkInProgressForm.jsx";
+import Profile from "./After_Login_pages/Profile.jsx";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -115,6 +116,7 @@ const App = () => {
                   path="/Work-In-Progress-Form/:workId"
                   element={<WorkInProgressForm />}
                 />
+                <Route path="/profile" element={<Profile />} />
               </>
             )}
           </Routes>
