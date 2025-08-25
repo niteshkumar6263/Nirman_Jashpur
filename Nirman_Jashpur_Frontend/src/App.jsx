@@ -23,7 +23,6 @@ import LoginPage from "./Before_Login_pages/Login.jsx";
 import HomePage from "./Before_Login_pages/HomePage.jsx";
 import DownloadPage from "./Before_Login_pages/DownloadPage.jsx";
 import DashboardPage from "./After_Login_pages/DashboardPage.jsx";
-import GISPage from "./After_Login_pages/GISPage.jsx";
 import WorkPage from "./After_Login_pages/WorkPage.jsx";
 import WorkForm from "./Forms/WorkForm.jsx";
 import TechnicalApprovalPage from "./After_Login_pages/TechnicalApprovalPage.jsx";
@@ -38,6 +37,7 @@ import TechnicalApprovalForm from "./Forms/TechnicalApprovalForm.jsx";
 import TenderForm from "./Forms/TenderForm.jsx";
 import WorkOrderForm from "./Forms/WorkOrderForm.jsx";
 import WorkInProgressForm from "./Forms/WorkInProgressForm.jsx";
+import GISCategory from "./After_Login_pages/GIS/Category.jsx";
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -79,7 +79,6 @@ const App = () => {
             {isLoggedIn && (
               <>
                 <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/gis" element={<GISPage />} />
                 <Route path="/work" element={<WorkPage />} />
                 <Route
                   path="/Technical-Approval"
@@ -115,6 +114,7 @@ const App = () => {
                   path="/Work-In-Progress-Form/:workId"
                   element={<WorkInProgressForm />}
                 />
+                <Route path="/gis/category" element={<GISCategory />} />
               </>
             )}
           </Routes>
