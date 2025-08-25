@@ -1,6 +1,6 @@
 /* === Global Design Tokens (matching WorkPage) === */
 @import "tailwindcss";
-
+@plugin 'tailwind-scrollbar';
 
 :root {
   --deep-blue: #0b3f7f;
