@@ -177,45 +177,51 @@ const SideNavbar = ({ currentPage, setCurrentPage, onLogout }) => {
           <div className="s-sub">आदिवासी विकास विभाग</div>
         </div>
       </div>
-      <nav className="menu" aria-label="मुख्य नेविगेशन">
-        {mainItems.map(it => (
-          <button key={it.k} className={currentPage===it.k? 'active': ''} onClick={()=>setCurrentPage(it.k)}>
-            <i className="fa-solid fa-circle" style={{fontSize:6, display:'none'}}></i>{it.icon}<span>{it.label}</span>
-          </button>
-        ))}
-        
-        {/* Reports Section with Expandable Sub-items */}
-        <div className="report-section">
-          <button 
-            className={`report-main ${isReportPage(currentPage) ? 'active' : ''}`} 
-            onClick={toggleReports}
-          >
-            <FileText />
-            <span>रिपोर्ट</span>
-            {expandedReports ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-          </button>
+      
+      <div className="sidebar-content">
+        <nav className="menu" aria-label="मुख्य नेविगेशन">
+          {mainItems.map(it => (
+            <button key={it.k} className={currentPage===it.k? 'active': ''} onClick={()=>setCurrentPage(it.k)}>
+              <i className="fa-solid fa-circle" style={{fontSize:6, display:'none'}}></i>{it.icon}<span>{it.label}</span>
+            </button>
+          ))}
           
-          {expandedReports && (
-            <div className="report-submenu">
-              {reportSubItems.map(item => (
-                <button 
-                  key={item.k} 
-                  className={`report-sub-item ${currentPage === item.k ? 'active' : ''}`}
-                  onClick={() => setCurrentPage(item.k)}
-                >
-                  <span>• {item.label}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
+          {/* Reports Section with Expandable Sub-items */}
+          <div className="report-section">
+            <button 
+              className={`report-main ${isReportPage(currentPage) ? 'active' : ''}`} 
+              onClick={toggleReports}
+            >
+              <FileText />
+              <span>रिपोर्ट</span>
+              {expandedReports ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            </button>
+            
+            {expandedReports && (
+              <div className="report-submenu">
+                {reportSubItems.map(item => (
+                  <button 
+                    key={item.k} 
+                    className={`report-sub-item ${currentPage === item.k ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(item.k)}
+                  >
+                    <span>• {item.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </nav>
+        
+        <div className="tribal"><div className="art" /></div>
+      </div>
+      
+      <div className="sidebar-footer">
         <button className="logout-btn" onClick={onLogout}>
           <i className="fa-solid fa-power-off" style={{width:26,textAlign:'center'}}></i>
           <span>लॉगआउट</span>
         </button>
-      </nav>
-      <div className="tribal"><div className="art" /></div>
+      </div>
     </aside>
   );
 };

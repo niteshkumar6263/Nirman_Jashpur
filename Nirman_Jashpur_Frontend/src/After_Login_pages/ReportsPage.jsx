@@ -411,10 +411,9 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 				.reports-page {
 					min-height: 100vh;
 					height: 100vh;
-					width: calc(80vw);
+					width: 100%;
+					max-width: 100%;
 					background-color: #f8fafc;
-					padding: 0;
-					margin: 0 0 0 40px;
 					font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 					overflow-x: hidden;
 					position: relative;
@@ -436,12 +435,12 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 				.header-content {
 					width: 100%;
 					margin: 0;
-					padding: 0 1rem;
+					padding: 0 2rem;
 					display: flex;
 					justify-content: space-between;
 					align-items: center;
 					flex-wrap: wrap;
-					gap: 1rem;
+					gap: 2rem;
 					box-sizing: border-box;
 				}
 
@@ -550,21 +549,21 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 				}
 
 				.year-select {
-					padding: 0.5rem 0.75rem;
-					border: 1px solid #d1d5db;
-					border-radius: 6px;
-					background-color: #ffffff;
-					color: #374151;
-					font-size: 0.875rem;
+					padding: 10px 12px;
+					border-radius: 8px;
+					border: 1px solid #e2e8f0;
+					background: #fbfdff;
+					outline: none;
+					color: #1a1f29;
+					font-size: 14px;
 					font-weight: 500;
 					min-width: 120px;
 					margin: 0;
 				}
 
 				.year-select:focus {
-					outline: none;
-					border-color: #3b82f6;
-					box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+					border-color: #a3c3ff;
+					box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
 				}
 
 				.controls-right {
@@ -578,35 +577,41 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 					display: flex;
 					align-items: center;
 					gap: 0.5rem;
-					padding: 0.75rem 1rem;
-					border: none;
-					border-radius: 8px;
-					font-weight: 600;
-					font-size: 0.875rem;
+					padding: 10px 14px;
+					border: 0;
+					border-radius: 10px;
+					font-weight: 700;
+					font-size: 14px;
 					cursor: pointer;
-					transition: all 0.2s ease;
+					transition: transform 0.08s ease;
 					text-decoration: none;
 					margin: 0;
 				}
 
 				.export-button {
-					background-color: #10b981;
-					color: white;
+					background: #0d63c6;
+					color: #fff;
 				}
 
 				.export-button:hover {
-					background-color: #059669;
-					transform: translateY(-1px);
+					background: #0b5bb8;
+				}
+
+				.export-button:active {
+					transform: translateY(1px);
 				}
 
 				.download-button {
-					background-color: #f59e0b;
-					color: white;
+					background: #0e3d46;
+					color: #fff;
 				}
 
 				.download-button:hover {
-					background-color: #d97706;
-					transform: translateY(-1px);
+					background: #0d3440;
+				}
+
+				.download-button:active {
+					transform: translateY(1px);
 				}
 
 				.report-content {
@@ -625,7 +630,8 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 					padding: 1rem;
 					border-radius: 8px;
 					margin-bottom: 1.5rem;
-					font-size: 0.875rem;
+					font-size: 14px;
+					font-weight: 500;
 				}
 
 				.table-container {
@@ -642,24 +648,27 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 				.reports-table {
 					width: 100%;
 					border-collapse: collapse;
-					font-size: 0.875rem;
+					font-size: 14px;
 					margin: 0;
 				}
 
 				.table-header {
-					background-color: #1e40af;
-					color: white;
-					padding: 1rem 0.75rem;
+					background: #0e3d46;
+					color: #fff;
 					text-align: left;
+					padding: 12px;
+					position: sticky;
+					top: 0;
 					font-weight: 600;
-					font-size: 0.875rem;
+					font-size: 14px;
 					white-space: nowrap;
 					margin: 0;
+					width: 100%;
+					box-sizing: border-box;
 				}
 
 				.index-header {
 					text-align: center;
-					width: 60px;
 				}
 
 				.table-row {
@@ -668,29 +677,31 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 				}
 
 				.table-row:hover {
-					background-color: #f8fafc;
+					background: #eaf5ff;
 				}
 
 				.table-row.even {
-					background-color: #f8fafc;
+					background: #f7fbfd;
 				}
 
 				.table-row.odd {
-					background-color: #ffffff;
+					background: #ffffff;
 				}
 
 				.table-cell {
-					padding: 1rem 0.75rem;
-					border-bottom: 1px solid #e2e8f0;
-					color: #374151;
+					padding: 12px;
+					border-bottom: 1px solid #edf2f7;
+					color: #1b2330;
 					vertical-align: top;
 					margin: 0;
+					font-weight: 400;
+					line-height: 1.4;
 				}
 
 				.index-cell {
 					text-align: center;
-					font-weight: 600;
-					color: #6b7280;
+					font-weight: 500;
+					color: #455269;
 				}
 
 				.loading-cell {
@@ -703,7 +714,6 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 					display: flex;
 					flex-direction: column;
 					align-items: center;
-					gap: 1rem;
 					color: #6b7280;
 					margin: 0;
 				}
@@ -741,6 +751,8 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 				.empty-state p {
 					margin: 0;
 					font-size: 1rem;
+					font-weight: 500;
+					color: #6b7280;
 				}
 
 				/* Responsive Design */
@@ -789,74 +801,85 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 
 				@media (max-width: 768px) {
 					.reports-page {
-						width: calc(100vw - 20px);
-						margin-left: 10px;
+						width: 100vw;
+						margin-left: 0;
 						position: relative;
-					}
-
-					.header-content,
-					.controls-content,
-					.report-content {
-						padding: 0 0.5rem;
+						padding: 0;
 					}
 
 					.header-content {
+						padding: 0 1rem;
+						flex-direction: column;
+						align-items: flex-start;
+						gap: 1rem;
+					}
+					
+					.controls-content {
+						padding: 0 1rem;
 						flex-direction: column;
 						align-items: stretch;
 						gap: 1rem;
 					}
+					
+					.report-content {
+						padding: 1rem;
+					}
 
 					.header-left {
 						justify-content: flex-start;
+						width: 100%;
 					}
 
 					.breadcrumb {
 						text-align: left;
 						font-size: 0.75rem;
-					}
-
-					.year-selector {
-						align-items: flex-start;
-					}
-
-					.controls-content {
-						flex-direction: column;
-						align-items: stretch;
-						gap: 1rem;
+						width: 100%;
 					}
 
 					.controls-left {
-						justify-content: flex-start;
+						width: 100%;
+					}
+
+					.year-selector {
+						width: 100%;
+					}
+
+					.year-select {
+						width: 100%;
+						font-size: 1rem;
+						padding: 0.75rem;
 					}
 
 					.controls-right {
-						justify-content: flex-start;
+						width: 100%;
 						flex-direction: row;
-						gap: 0.5rem;
+						gap: 0.75rem;
 					}
 
 					.action-button {
 						flex: 1;
 						justify-content: center;
-						min-width: 120px;
-						font-size: 0.75rem;
-						padding: 0.5rem 0.75rem;
+						font-size: 0.875rem;
+						padding: 0.75rem 1rem;
+						min-height: 44px;
 					}
 
 					.table-container {
 						border-radius: 8px;
 						overflow-x: auto;
 						-webkit-overflow-scrolling: touch;
+						margin: 0 -1rem;
+						width: calc(100% + 2rem);
 					}
 
 					.reports-table {
-						min-width: 700px;
+						min-width: 600px;
 					}
 
 					.table-header,
 					.table-cell {
 						padding: 0.75rem 0.5rem;
-						font-size: 0.7rem;
+						font-size: 0.8rem;
 						white-space: nowrap;
 					}
 
@@ -876,14 +899,20 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 
 				@media (max-width: 640px) {
 					.reports-page {
-						width: calc(100vw - 10px);
-						margin-left: 5px;
+						width: 100vw;
+						margin-left: 0;
 					}
 
-					.header-content,
-					.controls-content,
+					.header-content {
+						padding: 0 0.75rem;
+					}
+					
+					.controls-content {
+						padding: 0 0.75rem;
+					}
+					
 					.report-content {
-						padding: 0 0.25rem;
+						padding: 0.75rem;
 					}
 
 					.header-title {
@@ -893,29 +922,31 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 					}
 
 					.controls-right {
-						flex-direction: column;
+						flex-direction: row;
 						gap: 0.5rem;
 					}
 
 					.action-button {
-						width: 100%;
-						font-size: 0.7rem;
-						padding: 0.5rem;
+						flex: 1;
+						font-size: 0.8rem;
+						padding: 0.75rem 0.5rem;
+						min-height: 44px;
 					}
 
 					.table-container {
 						border-radius: 6px;
-						margin: 0 -0.25rem;
+						margin: 0 -0.75rem;
+						width: calc(100% + 1.5rem);
 					}
 
 					.reports-table {
-						min-width: 600px;
+						min-width: 500px;
 					}
 
 					.table-header,
 					.table-cell {
 						padding: 0.5rem 0.25rem;
-						font-size: 0.65rem;
+						font-size: 0.7rem;
 					}
 
 					.index-header {
@@ -934,14 +965,20 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 
 				@media (max-width: 480px) {
 					.reports-page {
-						width: calc(100vw - 5px);
-						margin-left: 2px;
+						width: 100vw;
+						margin-left: 0;
 					}
 
-					.header-content,
-					.controls-content,
+					.header-content {
+						padding: 0 0.5rem;
+					}
+					
+					.controls-content {
+						padding: 0 0.5rem;
+					}
+					
 					.report-content {
-						padding: 0 0.125rem;
+						padding: 0.5rem;
 					}
 
 					.header-title {
@@ -983,30 +1020,32 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 					}
 
 					.controls-right {
-						flex-direction: column;
+						flex-direction: row;
 						width: 100%;
 						gap: 0.375rem;
 					}
 
 					.action-button {
-						width: 100%;
-						font-size: 0.65rem;
-						padding: 0.375rem;
+						flex: 1;
+						font-size: 0.75rem;
+						padding: 0.5rem 0.375rem;
+						min-height: 44px;
 					}
 
 					.table-container {
 						border-radius: 4px;
-						margin: 0 -0.125rem;
+						margin: 0 -0.5rem;
+						width: calc(100% + 1rem);
 					}
 
 					.reports-table {
-						min-width: 500px;
+						min-width: 450px;
 					}
 
 					.table-header,
 					.table-cell {
 						padding: 0.375rem 0.125rem;
-						font-size: 0.6rem;
+						font-size: 0.65rem;
 					}
 
 					.index-header {
@@ -1034,10 +1073,16 @@ export default function ReportsPage({ reportType = "financial-year" }) {
 						margin-left: 0;
 					}
 
-					.header-content,
-					.controls-content,
+					.header-content {
+						padding: 0 0.375rem;
+					}
+					
+					.controls-content {
+						padding: 0 0.375rem;
+					}
+					
 					.report-content {
-						padding: 0 0.25rem;
+						padding: 0.375rem;
 					}
 
 					.header-title h1 {
